@@ -49,7 +49,19 @@
         </li>
       {% endfor %}
 
-      {% if hasSearch %}
+      {% if theme.ownAlgolia %}
+      <input id = "ownAlgoliaId"></input>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+      <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+      <script type="text/javascript">
+        docsearch({
+          apiKey: '<API_KEY>',
+          indexName: '<INDEX_NAME>',
+          inputSelector: '#ownAlgoliaId'
+        });
+      </script>
+
+      {% elseif hasSearch %}
         <li class="menu-item menu-item-search">
           {% if theme.swiftype_key %}
             <a href="javascript:;" class="st-search-show-outputs">

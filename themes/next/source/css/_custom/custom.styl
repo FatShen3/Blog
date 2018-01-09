@@ -1,1 +1,64 @@
 // Custom styles.
+#ownAlgoliaId {
+  height: 30px;
+  line-height: 30px;
+  box-sizing: border-box;
+  padding: 0 15px 0 30px;
+  border: 1px solid #e3e3e3;
+  color: $dark;
+  outline: none;
+  border-radius: 15px;
+  margin-right: 10px;
+  transition: border-color .2s ease;
+  background: #fff url(../images/search.png) 8px 5px no-repeat;
+  background-size: 20px;
+  vertical-align: middle !important;
+  border-color: $green;
+}
+.logo-line-after,  .logo-line-before{
+  i {
+    height: 0px;
+  }
+}
+
+.post-button {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.footer-inner {
+  text-align: center;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  z-index: 2;
+  width: 100%;
+}
+
+.main {
+  padding-top: 30px;
+}
+
+.posts-expand {
+  .post-title, .post-meta {
+    text-align: center;
+  }
+}
+
+.header-inner {
+  +mobile() {
+    margin-bottom: 0px;
+  }
+}
+
+.menu {
+  +mobile() {
+    text-align: left;
+  }  
+}
+
+.posts-collapse {
+  z-index: 1;  
+}

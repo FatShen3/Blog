@@ -7,13 +7,14 @@ title: FatShen's Blog
 subtitle:
 description:
 author: Fat Shen
-language:
+language: zh-cn
 timezone:
+avatar: https://avatars0.githubusercontent.com/u/25524169?s=460&v=4
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 url: http://yoursite.com
-root: /
+root: /Blog/
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 
@@ -28,7 +29,7 @@ i18n_dir: :lang
 skip_render:
 
 # Writing
-new_post_name: :title.md # File name of new posts
+new_post_name: :year-:month-:day-:title.md # File name of new posts
 default_layout: post
 titlecase: false # Transform title into titlecase
 external_link: true # Open external links in new tab
@@ -78,5 +79,12 @@ theme: next
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: https://github.com/FatShen3/FatShen3.github.io.git
-  branch: master
+  repo: https://github.com/FatShen3/Blog.git
+  branch: gh-pages
+
+algolia:
+  applicationID: 'B7WL0CZLJX'
+  apiKey: 'd54d7b943d8fdc2d08a862405d2985e7'
+  adminApiKey: '869bc4e370273e93689e2360adef72f9'
+  indexName: 'HEXO_ALGOLIA_INDEXING_KEY'
+  chunkSize: 5000
