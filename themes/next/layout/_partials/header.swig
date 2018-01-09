@@ -55,8 +55,9 @@
       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
       <script type="text/javascript">
         docsearch({
-          apiKey: '<API_KEY>',
-          indexName: '<INDEX_NAME>',
+          appId: 'B7WL0CZLJX',
+          apiKey: 'd54d7b943d8fdc2d08a862405d2985e7',
+          indexName: 'FatShenBlog',
           inputSelector: '#ownAlgoliaId'
         });
       </script>
