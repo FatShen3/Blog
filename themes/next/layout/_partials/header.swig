@@ -58,6 +58,9 @@
           appId: 'B7WL0CZLJX',
           apiKey: 'd54d7b943d8fdc2d08a862405d2985e7',
           indexName: 'FatShenBlog',
+          appId: 'BH4D9OD16A',
+      apiKey: '85cc3221c9f23bfbaa4e3913dd7625ea',
+      indexName: 'vuejs',
           inputSelector: '#ownAlgoliaId'
         });
       </script>
