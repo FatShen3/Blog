@@ -22,7 +22,7 @@ NexT.utils = NexT.$u = {
         $imageWrapLink.attr('rel', 'group');
 
         if (imageTitle) {
-          $imageWrapLink.append('<p class="image-caption">' + imageTitle + '</p>');
+          $imageWrapLink.prepend('<p class="image-caption">' + imageTitle + '</p>');
 
           //make sure img title tag will show correctly in fancybox
           $imageWrapLink.attr('title', imageTitle);

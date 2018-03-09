@@ -28,16 +28,17 @@
   {# git issue comment block#}
   <div id="container" class = "post-block"></div>
 {% set gitmentjs = url_for(theme.vendors._internal) + '/gitment/gitment.browser.js' %}
+{% set gitmentid = page.title %}
 <script src="{{gitmentjs}}"></script>
 <script>
 var gitment = new Gitment({
   link: 'https://github.com/FatShen3/Blog/issues',
-  id: location.href, // 可选。默认为 location.href
+  id: '{{gitmentid}}', // 可选。默认为 location.href, 这个会用作label，目前最长50个字符
   owner: 'FatShen3',
   repo: 'Blog',
   oauth: {
-    client_id: 'ef53875e8eb831056fd4',
-    client_secret: '917858401bc730b4bc3011202ad1a902262de4fc',
+    client_id: 'df4cf8f5ace90705ef47',
+    client_secret: 'f3a7368660650339761f5b7b9b2a6040a7828490',
   },
 })
 gitment.render('container')
