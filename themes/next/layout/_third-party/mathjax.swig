@@ -1,4 +1,4 @@
-{% if theme.mathjax.enable %}
+{% if theme.mathjax.enable and page.mathjax %}
   {% if not theme.mathjax.per_page or (page.total or page.mathjax) %}
     <script type="text/x-mathjax-config">
       MathJax.Hub.Config({

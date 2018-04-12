@@ -34,7 +34,7 @@ default_layout: post
 titlecase: false # Transform title into titlecase
 external_link: true # Open external links in new tab
 filename_case: 0
-render_drafts: false
+render_drafts: true
 post_asset_folder: true
 relative_link: false
 future: true
@@ -109,3 +109,15 @@ markdown:
     permalink: true
     permalinkClass: header-anchor
     permalinkSymbol: ''
+
+# math:
+#   engine: 'mathjax' # or 'katex'
+#   mathjax:
+#     src: 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
+#     config:
+#       # MathJax config
+#   katex:
+#     css: "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"
+#     js: "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.js"
+#     config:
+#       # KaTeX config
