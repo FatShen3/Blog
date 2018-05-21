@@ -3,6 +3,8 @@ title: numpy-学习记录
 tags:
   - python
   - numpy
+categories:
+  - 机器学习
 date: 2018-04-12 09:56:51
 ---
 
