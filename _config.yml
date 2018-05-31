@@ -99,7 +99,7 @@ markdown:
     quotes: '“”‘’'
   plugins:
     - markdown-it-footnote
-    - markdown-it-sup
+    #- markdown-it-sup 这个sup和mathjax冲突了
     - markdown-it-sub
     - markdown-it-abbr
     - markdown-it-emoji
