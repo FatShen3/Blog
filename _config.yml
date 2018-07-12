@@ -13,8 +13,9 @@ avatar: https://avatars0.githubusercontent.com/u/25524169?s=460&v=4
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://yoursite.com
-root: /Blog/
+#url: http://yoursite.com
+url: http://fatshen3.cn
+#root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 
