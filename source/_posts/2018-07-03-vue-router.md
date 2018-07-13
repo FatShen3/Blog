@@ -266,6 +266,6 @@ const queue: Array<?NavigationGuard> = [].concat( // route更新周期的各个�
 
 在看源码的时候，等于是又复习了一下hash和h5 history的知识，也明白了`vue-router`的原理。清楚了整个导航流程，以后使用中碰到问题也能结合起来快速定位了。最后，附上添加了注释的源代码，水平有限难免理解有误。
 
-[点击下载](/Blog/download/vue-router-src.zip)
+[点击下载](/download/vue-router-src.zip)
 
 Over~

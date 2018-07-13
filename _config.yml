@@ -15,7 +15,7 @@ avatar: https://avatars0.githubusercontent.com/u/25524169?s=460&v=4
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 #url: http://yoursite.com
 url: http://fatshen3.cn
-#root: /
+#root: /Blog
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 
@@ -78,7 +78,7 @@ theme: next
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
-deploy:
+deploy: 
   type: git
   repo: https://github.com/FatShen3/Blog.git
   branch: gh-pages
