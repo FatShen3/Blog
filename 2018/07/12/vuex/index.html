@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-cn">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="vue,flux," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。它采用集中式存储(单一状态树)管理应用的所有组件的状态，并且严格的规定了状态的变更方式，使得这些变化可追踪、可调试。">
+<meta name="keywords" content="vue,flux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vue源代码学习-vuex">
+<meta property="og:url" content="http://fatshen3.cn/2018/07/12/vuex/index.html">
+<meta property="og:site_name" content="FatShen&#39;s Blog">
+<meta property="og:description" content="Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。它采用集中式存储(单一状态树)管理应用的所有组件的状态，并且严格的规定了状态的变更方式，使得这些变化可追踪、可调试。">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="http://fatshen3.cn/2018/07/12/vuex/flow.png">
+<meta property="og:image" content="http://fatshen3.cn/2018/07/12/vuex/vuex.png">
+<meta property="og:image" content="http://fatshen3.cn/2018/07/12/vuex/vuex_init.png">
+<meta property="og:image" content="http://fatshen3.cn/2018/07/12/vuex/vue_computed.png">
+<meta property="og:updated_time" content="2018-07-12T09:26:33.999Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="vue源代码学习-vuex">
+<meta name="twitter:description" content="Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。它采用集中式存储(单一状态树)管理应用的所有组件的状态，并且严格的规定了状态的变更方式，使得这些变化可追踪、可调试。">
+<meta name="twitter:image" content="http://fatshen3.cn/2018/07/12/vuex/flow.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'B7WL0CZLJX',
+      apiKey: 'd54d7b943d8fdc2d08a862405d2985e7',
+      indexName: 'HEXO_ALGOLIA_INDEXING_KEY',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://fatshen3.cn/2018/07/12/vuex/"/>
+
+
+
+
+
+  <title>vue源代码学习-vuex | FatShen's Blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-cn">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">FatShen's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://fatshen3.cn/2018/07/12/vuex/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Fat Shen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars0.githubusercontent.com/u/25524169?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="FatShen's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">vue源代码学习-vuex</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-12T11:20:19+08:00">
+                2018-07-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/前端/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+          
+          
+             <span id="/2018/07/12/vuex/" class="leancloud_visitors" data-flag-title="vue源代码学习-vuex">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。它采用集中式存储(单一状态树)管理应用的所有组件的状态，并且严格的规定了状态的变更方式，使得这些变化可追踪、可调试。</p>
+<a id="more"></a>
+<h2 id="准备工作"><a class="header-anchor" href="#准备工作"></a>准备工作</h2>
+<p>和之前一毛一样，我们先拷贝最新的v3.0.0 tag版本工程到本地吧~</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> --branch v3.0.0 https://github.com/vuejs/vuex.git</span><br><span class="line"><span class="built_in">cd</span> vuex</span><br><span class="line">npm i</span><br><span class="line">npm run dev</span><br></pre></td></tr></table></figure>
+<p>一切准备就绪, go~</p>
+<h2 id="核心概念"><a class="header-anchor" href="#核心概念"></a>核心概念<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></h2>
+<p>在Vue的开发模式中, 数据是单向传递的(这里不是指父子组件), 包含以下几个部分:</p>
+<ul>
+<li>state，驱动应用的数据源；</li>
+<li>view，以声明方式将 state 映射到视图；</li>
+<li>actions，响应在 view 上的用户输入导致的状态变化。</li>
+</ul>
+<p>示意图如下:</p>
+<img src="/2018/07/12/vuex/flow.png">
+<p>但是以下一些情况就很难处理了, 或者说不能优雅的处理：</p>
+<ul>
+<li>多个视图依赖同一个状态</li>
+<li>不同视图需要变更同一个状态</li>
+</ul>
+<p>所以，为了解决这个问题，Vuex应运而生。借鉴了如Flux、Redux的思想，Vuex把共享的状态抽取出来，以一个全局的单例模式管理，通过定义和隔离状态管理中的各种概念并且强制遵循一定的规则，使得代码更结构化和易于维护。</p>
+<p>Vuex的核心概念如下:</p>
+<ul>
+<li><em>Store</em> 每一个Vuex对象就是一个store(仓库), 可以理解为一个容器，里面包含了一切数据状态、改变数据的API、子仓库等</li>
+<li><em>State</em> 顾名思义, State就是状态，它是一个Vuex仓库的状态数据源，储存的数据是响应式的</li>
+<li><em>Getter</em> Getter可以理解为一个vuex仓库的计算属性, 它同vue的computed一样，只有依赖的值改变时才会重新计算值</li>
+<li><em>Mutation</em> 修改state状态的唯一方法就是提交mutation，这样看起来mutation很像一个事件。这样的好处是代码更结构化易于维护，并且可以配合插件(devtool)进行调试，保存各个状态下的状态快照。Mutation必须是同步的</li>
+<li><em>Action</em> Action通过提交Mutation来改变state，同mutation的区别是它可以包含任意的异步操作，但是记住Action不能直接改变state。</li>
+<li><em>Module</em> Vuex允许将store切割为模块，自上而下的进行切割，可以嵌套子模块、模块复用等。</li>
+</ul>
+<p>使用Mutation来同步改变state状态，action中包裹异步情况再调用mutation，在我看来，Vuex这样分层设计是为了代码逻辑更为清晰和易于维护，同时也兼顾了强大的调试功能。</p>
+<img src="/2018/07/12/vuex/vuex.png">
+<p>在官网的图示上，做了一点修改，主要是增加了一块从vue对象到mutations的调用连线。下面的内容，我们将逐步学习这个图中每一个节点和节点之间是如何工作的。</p>
+<h2 id="初始化store"><a class="header-anchor" href="#初始化store"></a>初始化Store</h2>
+<p>Store其实就是一个vuex的实例, 它的初始化主要做如下一些工作：</p>
+<ol>
+<li>注册当前module(若首次则为root module, 可能为空对象<code>{}</code>)</li>
+<li>生成这个模块的局部上下文context(包含自身模块的state等)</li>
+<li>为当前module注册mutation、action、getter到store中, 回调对应的参数就包含了局部context和全局store或它们的属性</li>
+<li>递归的将子模块依次重新完成1-3步骤</li>
+<li>创建内部的vue对象，以此将state转化为响应式对象，并且将getters转化为计算属性computed</li>
+<li>根据配置，决定是否启用严格模式、加载自定义插件、开启vue Devtools</li>
+</ol>
+<img src="/2018/07/12/vuex/vuex_init.png">
+<p>经过以上步骤，一个vuex对象就初始化完毕了，看起来很简单是不是。确实如此，依托了vue自身的功能，vuex很轻松优雅的就实现了响应式的数据仓库，并且建立了一套有效的调试机制。</p>
+<h2 id="局部上下文"><a class="header-anchor" href="#局部上下文"></a>局部上下文</h2>
+<p>为什么要有局部上下文？其实这是vuex为了实现模块划分引入的，局部上下文和全局store的区别其实也就是局部上下文方法或属性在调用时，将会在vuex框架内部添加<code>namespace path</code>，然后再调用store上对应的方法或属性。所以此时的调用路径等效于<code>namespace path + relative path</code>。</p>
+<h2 id="getters"><a class="header-anchor" href="#getters"></a>Getters</h2>
+<p><code>getters</code>是store计算属性，其实现也是利用了vue的计算属性，其实现如下:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">store.getters = &#123;&#125;</span><br><span class="line">  <span class="keyword">const</span> wrappedGetters = store._wrappedGetters</span><br><span class="line">  <span class="keyword">const</span> computed = &#123;&#125;</span><br><span class="line">  forEachValue(wrappedGetters, (fn, key) =&gt; &#123;</span><br><span class="line">    <span class="comment">// use computed to leverage its lazy-caching mechanism</span></span><br><span class="line">    computed[key] = <span class="function"><span class="params">()</span> =&gt;</span> fn(store)</span><br><span class="line">    <span class="built_in">Object</span>.defineProperty(store.getters, key, &#123;</span><br><span class="line">      get: <span class="function"><span class="params">()</span> =&gt;</span> store._vm[key], <span class="comment">// 返回Vue的计算属性值</span></span><br><span class="line">      enumerable: <span class="literal">true</span> <span class="comment">// for local getters</span></span><br><span class="line">    &#125;)</span><br><span class="line">&#125;)</span><br><span class="line">...</span><br><span class="line">store._vm = <span class="keyword">new</span> Vue(&#123;</span><br><span class="line">    data: &#123;</span><br><span class="line">      $$state: state</span><br><span class="line">    &#125;,</span><br><span class="line">    computed <span class="comment">// 把getters变为计算属性的性质，也就是依赖值改变了getters才会重新计算</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>传入的computed其实也就是应用传入的<code>key:handler</code>结构，只是key还加入了模块化的路径，并且定义了<code>store.getters[key]</code>指向<code>_vm[key]</code>以此来访问计算属性。</p>
+<p>我们知道, Vue的计算属性的值，只有在其依赖的值改变时才会重新计算。记得之前在写vue相关博客时还没写到这是如何实现的，这里再啰嗦一段写一下。</p>
+<h3 id="vue的计算属性"><a class="header-anchor" href="#vue的计算属性"></a>Vue的计算属性</h3>
+<p>既然是要实现依赖触发改变，那么就像<code>render watcher</code>一样，每一个计算属性其实也对应了一个独立的<code>watcher</code>，<code>watcher</code>在初始化时会执行自身的<code>getter</code>,并且将自身<code>push</code>到依赖收集的栈顶，然后若在<code>getter</code>执行过程中遇到了响应式数据，就将<code>watcher</code>加入到响应式数据的<code>dep</code>中去。这样来看，我们其实已经保证到了当依赖数据改变时，watcher会自动更改值, 看起来就已经解决了问题。但是计算属性是属于可直接访问的值，假设有如下情况:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">   data: &#123;</span><br><span class="line">    a: <span class="number">0</span></span><br><span class="line">   &#125;,</span><br><span class="line">   computed: &#123;</span><br><span class="line">     b () &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.a</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">vue.a = <span class="number">1</span></span><br><span class="line">vue.a = <span class="number">2</span></span><br><span class="line"><span class="built_in">console</span>.log(vue.b)</span><br></pre></td></tr></table></figure>
+<p>由于在vue中，响应式属性更新时，其执行<code>watcher getter</code>是放在异步queue中执行，所以在如上代码中，这样就有问题了。若我们将计算属性的watcher设置为同步执行getter，那么在上述连续修改依赖值的情况下，就重复的执行了计算属性对应的函数。综上，vue将计算属性设置成了懒加载模式，也就是说:</p>
+<ul>
+<li>当依赖值改变时, 将计算属性的watcher标记为<code>dirty</code></li>
+<li>若访问计算属性, 则判断是否为dirty: 若为dirty, 立即重新计算值; 若否, 使用旧值</li>
+<li>若访问计算属性, 将计算属性依赖的dep加入到当前的栈顶watcher中(多半是render watcher)</li>
+</ul>
+<img src="/2018/07/12/vuex/vue_computed.png">
+<p>计算属性的getter源代码如下:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createComputedGetter</span> (<span class="params">key</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">computedGetter</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> watcher = <span class="keyword">this</span>._computedWatchers &amp;&amp; <span class="keyword">this</span>._computedWatchers[key]</span><br><span class="line">    <span class="keyword">if</span> (watcher) &#123;</span><br><span class="line">      <span class="keyword">if</span> (watcher.dirty) &#123; <span class="comment">// 计算属性依赖的值改变过了，需要重新计算值(所以当依赖值没改变的时候，计算属性会使用旧值)</span></span><br><span class="line">        watcher.evaluate() <span class="comment">// 立即计算新的值, 储存到watcher.value</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (Dep.target) &#123; <span class="comment">// 将计算属性的watcher所依赖dep加入到当前栈顶watcher(多半是render watcher)，这样可以在依赖更改时去让计算属性的watcher dirty</span></span><br><span class="line">        watcher.depend()</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> watcher.value</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="严格模式"><a class="header-anchor" href="#严格模式"></a>严格模式</h2>
+<p>vuex规定了，状态的改变必须由<code>mutation</code>来引起，所以这里提供了严格模式。当应用不遵循这个规则时，vuex会抛出异常信息。vuex在内部实现一个封装，使用封装函数来修改state的值就不会触发警告，本质也是设置一个标志位，再修改后重置</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">_withCommit (fn) &#123; <span class="comment">// 严格模式的封装</span></span><br><span class="line">    <span class="keyword">const</span> committing = <span class="keyword">this</span>._committing</span><br><span class="line">    <span class="keyword">this</span>._committing = <span class="literal">true</span></span><br><span class="line">    fn()</span><br><span class="line">    <span class="keyword">this</span>._committing = committing</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">enableStrictMode</span> (<span class="params">store</span>) </span>&#123; <span class="comment">// 严格模式实现</span></span><br><span class="line">  <span class="comment">// 任何修改state值的行为, 必须是被store._withCommit方法包裹的(内部使用, 如commit方法)</span></span><br><span class="line">  <span class="comment">// _withCommit设置了store._committing为true, 在执行完方法后再变回false</span></span><br><span class="line">  <span class="comment">// 应用自行修改state值的时候store._committing为false触发警告</span></span><br><span class="line">  store._vm.$watch(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; <span class="keyword">return</span> <span class="keyword">this</span>._data.$$state &#125;, () =&gt; &#123; </span><br><span class="line">    <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span>) &#123;</span><br><span class="line">      assert(store._committing, <span class="string">`Do not mutate vuex store state outside mutation handlers.`</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;, &#123; <span class="attr">deep</span>: <span class="literal">true</span>, <span class="attr">sync</span>: <span class="literal">true</span> &#125;) <span class="comment">// sync来保证watcher立即执行回调，而不是放入queue中异步执行(参看vue实现), 否则watcher的回调是异步执行的</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="热重载-动态注册模块"><a class="header-anchor" href="#热重载-动态注册模块"></a>热重载 &amp; 动态注册模块</h2>
+<p>依托webpack的Hot Module Replacement API, vuex支持热重载。其实热重载与动态注册模块是类似的，基本等同于把store初始化的流程重新的跑了一次。但是为了保存状态，又要传递修改的内容给注册依赖的watcher，vuex主要会在以下几点进行特殊处理:</p>
+<ul>
+<li>热重载会保留之前的state状态，换言之不会再去调用<code>Vue.set</code>子模块state到父模块state下; 动态注册模块则根据<code>preserveState</code>来决定是否保留原state</li>
+<li>重新生成内部的vue对象, 虽然state其实可以不用变(已经是响应式属性), 但是getters可能改变，需要重新收集依赖、重新获取新值</li>
+<li>热重载将旧的vue对象中的<code>$$state</code>设置为<code>null</code>, 以此触发重新计算getters。虽然此时其他依赖于普通状态的watcher也会重新计算，但实际上计算出的值与旧值一样，这里的关键就是getters可能改变，导致计算属性结果值可能变更，所以要需要这样做</li>
+<li>销毁旧vue对象</li>
+</ul>
+<h2 id="调试功能"><a class="header-anchor" href="#调试功能"></a>调试功能</h2>
+<p><code>Vue Devtools</code>为<code>vuex</code>提供了非常方便的功能，称为<code>time-travel debugging</code>，确实非常方便。其实实现很简单，<code>vuex</code>只是在mutation时将当前状态快照传递给<code>devtools</code>, 这样<code>devtools</code>就可以保留全周期的状态快照。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> <span class="title">devtoolPlugin</span> (<span class="params">store</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!devtoolHook) <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">  store._devtoolHook = devtoolHook</span><br><span class="line"></span><br><span class="line">  devtoolHook.emit(<span class="string">'vuex:init'</span>, store)</span><br><span class="line"></span><br><span class="line">  devtoolHook.on(<span class="string">'vuex:travel-to-state'</span>, targetState =&gt; &#123; <span class="comment">// 跳转到某个状态快照</span></span><br><span class="line">    store.replaceState(targetState)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  store.subscribe(<span class="function">(<span class="params">mutation, state</span>) =&gt;</span> &#123; <span class="comment">// 将mutation修改后对应的状态快照传递给devtools</span></span><br><span class="line">    devtoolHook.emit(<span class="string">'vuex:mutation'</span>, mutation, state)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// store.js</span></span><br><span class="line"></span><br><span class="line">replaceState (state) &#123; <span class="comment">// 直接替换整个state, devtool调试时用到</span></span><br><span class="line">    <span class="keyword">this</span>._withCommit(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">this</span>._vm._data.$$state = state</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>怎么样，一目了然吧？这样以来，我们就可以利用<code>devtools</code>提供的功能，非常方便的在各个状态快照中穿梭:</p>
+<ul>
+<li>time travel: vuex实现中，将响应式对象<code>$$state</code>重新替换为<code>devtools</code>传递过来的即可</li>
+<li>commit: 将选中的state作为base state</li>
+<li>revert: 回到之前的状态，并且将这之间的状态快照移除</li>
+</ul>
+<h2 id="总结"><a class="header-anchor" href="#总结"></a>总结</h2>
+<p>看了源码，更理解了<code>vuex</code>的核心概念和实现。尤其是<code>mutation</code>和<code>action</code>的区别，从设计架构层面，两者各司其职，一个负责同步更改状态，一个负责异步，功能划分更为细致；从使用角度说，这一个设计则让<code>vuex</code>的调试和状态追踪变得简单方便。</p>
+<p>最后，附上添加了注释的源代码，水平有限难免理解有误。</p>
+<p><a href="/Blog/download/vuex-src.zip">点击下载</a></p>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>摘自vuex官网: <a href="https://vuex.vuejs.org/zh/" target="_blank" rel="noopener">https://vuex.vuejs.org/zh/</a> <a href="#fnref1" class="footnote-backref">↩</a></p>
+</li>
+</ol>
+</section>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/vue/" rel="tag"># vue</a>
+          
+            <a href="/tags/flux/" rel="tag"># flux</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/23/vue-router/" rel="next" title="vue源代码学习-vue-router">
+                <i class="fa fa-chevron-left"></i> vue源代码学习-vue-router
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+  
+  <div id="container" class = "post-block"></div>
+
+
+<script src="/lib/gitment/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  link: 'https://github.com/FatShen3/Blog/issues',
+  id: 'vue源代码学习-vuex', // 可选。默认为 location.href, 这个会用作label，目前最长50个字符
+  owner: 'FatShen3',
+  repo: 'Blog',
+  oauth: {
+    client_id: 'df4cf8f5ace90705ef47',
+    client_secret: 'f3a7368660650339761f5b7b9b2a6040a7828490',
+  },
+})
+gitment.render('container')
+</script>
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars0.githubusercontent.com/u/25524169?s=460&v=4"
+                alt="Fat Shen" />
+            
+              <p class="site-author-name" itemprop="name">Fat Shen</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/FatShen3" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#准备工作"><span class="nav-number">1.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#核心概念"><span class="nav-number">2.</span> <span class="nav-text">核心概念[1]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化store"><span class="nav-number">3.</span> <span class="nav-text">初始化Store</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#局部上下文"><span class="nav-number">4.</span> <span class="nav-text">局部上下文</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#getters"><span class="nav-number">5.</span> <span class="nav-text">Getters</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#vue的计算属性"><span class="nav-number">5.1.</span> <span class="nav-text">Vue的计算属性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#严格模式"><span class="nav-number">6.</span> <span class="nav-text">严格模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#热重载-动态注册模块"><span class="nav-number">7.</span> <span class="nav-text">热重载 &amp; 动态注册模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#调试功能"><span class="nav-number">8.</span> <span class="nav-text">调试功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">9.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fat Shen</span>
+
+  
+</div>
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("2A6ElsKPeJw5b0mJv0kibH2p-gzGzoHsz", "nzFgQKhNwFT6c4CIityIE74C");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+  
+  
+
+  
+  
+
+  
+
+</body>
+</html>

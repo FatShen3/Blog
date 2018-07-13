@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-cn">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="javascript," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言 刚接触js的时候就知道了精度的问题，比如下面这个经典的: 120.1 + 0.2 // 0.30000000000000004">
+<meta name="keywords" content="javascript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="javascript的精度问题">
+<meta property="og:url" content="http://fatshen3.cn/2018/05/29/javascript-float/index.html">
+<meta property="og:site_name" content="FatShen&#39;s Blog">
+<meta property="og:description" content="前言 刚接触js的时候就知道了精度的问题，比如下面这个经典的: 120.1 + 0.2 // 0.30000000000000004">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="http://fatshen3.cn/2018/05/29/javascript-float/1.svg">
+<meta property="og:updated_time" content="2018-07-12T09:26:33.993Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="javascript的精度问题">
+<meta name="twitter:description" content="前言 刚接触js的时候就知道了精度的问题，比如下面这个经典的: 120.1 + 0.2 // 0.30000000000000004">
+<meta name="twitter:image" content="http://fatshen3.cn/2018/05/29/javascript-float/1.svg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'B7WL0CZLJX',
+      apiKey: 'd54d7b943d8fdc2d08a862405d2985e7',
+      indexName: 'HEXO_ALGOLIA_INDEXING_KEY',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://fatshen3.cn/2018/05/29/javascript-float/"/>
+
+
+
+
+
+  <title>javascript的精度问题 | FatShen's Blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-cn">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">FatShen's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://fatshen3.cn/2018/05/29/javascript-float/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Fat Shen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars0.githubusercontent.com/u/25524169?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="FatShen's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">javascript的精度问题</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-29T21:41:17+08:00">
+                2018-05-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/前端/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+          
+          
+             <span id="/2018/05/29/javascript-float/" class="leancloud_visitors" data-flag-title="javascript的精度问题">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a class="header-anchor" href="#前言"></a>前言</h2>
+<p>刚接触js的时候就知道了精度的问题，比如下面这个经典的:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="number">0.1</span> + <span class="number">0.2</span> <span class="comment">// 0.30000000000000004</span></span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>还记得当时查了下资料，知道了js是使用的IEEE 754的双精度浮点类型，并且大家都懂得，2进制嘛，0.1和0.2在二进制中本来就是无限循环的数，所以就有了这些尾巴。但是后来又接二连三的碰到了诸如:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0.3</span> - <span class="number">0.2</span> <span class="comment">// 0.09999999999999998</span></span><br><span class="line"><span class="number">500.1</span> / <span class="number">10</span> <span class="comment">// 50.010000000000005</span></span><br><span class="line"><span class="number">10000000000000000</span> + <span class="number">1</span> <span class="comment">// 10000000000000000</span></span><br><span class="line"><span class="number">19.9</span> * <span class="number">100</span> <span class="comment">// 1989.9999999999998</span></span><br></pre></td></tr></table></figure>
+<p>本质我知道都是无法在有限的位数表达数字的问题。</p>
+<p>再接着</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="built_in">Number</span>.MAX_VALUE <span class="comment">// 1.7976931348623157e+308</span></span><br><span class="line"><span class="built_in">Number</span>.MIN_VALUE <span class="comment">// 5e-324</span></span><br><span class="line"><span class="built_in">Math</span>.pow(<span class="number">2</span>, <span class="number">1024</span>) <span class="comment">// Infinity</span></span><br><span class="line"><span class="built_in">Number</span>.MAX_SAFE_INTEGER <span class="comment">// 9007199254740991</span></span><br></pre></td></tr></table></figure>
+<p>这些值又是怎么确定的呢？hmm…，突然就想搞清楚这到底是怎么一回事了，那么就开始吧！</p>
+<h2 id="ieee-754"><a class="header-anchor" href="#ieee-754"></a>IEEE-754</h2>
+<h3 id="一些约定"><a class="header-anchor" href="#一些约定"></a>一些约定</h3>
+<ul>
+<li>$e$代表指数位数，比如单精度浮点值为8, 双精度为11</li>
+<li>$exponent$代表指数位数对应的值, 比如当双精度浮点数指数位数为00000000011时，$exponent = 2^1 + 2^0 = 3$</li>
+<li>数字下尾带了2的是二进制数，比如$11_2$是十进制的3</li>
+<li>如无特别说明, 所有结果都来自mac chrome 66.0.3359.181 64位版本</li>
+</ul>
+<h3 id="概述"><a class="header-anchor" href="#概述"></a>概述</h3>
+<p>IEEE-754是二进制浮点数的标准，其中包含了单精确度（32位）、双精确度（64位）、延伸单精确度与延伸双精确度(copy from wiki)。这里我们就只关注双精度浮点数吧，毕竟，我们还是在讨论js的嘛。</p>
+<p>一个浮点数可以用以下公式来表示：</p>
+<p>$$ float = sign * fraction * exponent $$</p>
+<p>也就是说，浮点数的值等于符号位 * 分数值 * 指数值，其实这很好理解，我们就理解为用2进制的科学计数法就行了嘛。在IEEE-754中，双精度浮点数共计64位，由以下三部分组成:</p>
+<ul>
+<li>1位符号位</li>
+</ul>
+<p>符号位决定了这个数的正负，0为正，1为负。</p>
+<ul>
+<li>11位指数位</li>
+</ul>
+<p>11位数如果按照有符号来解释，那么范围是-1024 到 1023；如果按照无符号型来解释，范围就是0 到 2047。IEEE-754中，采用后者加上偏移值来表示指数位，这个偏移值为$2^{e-1}-1$。所以双精度中偏移值为$2^{11-1}-1=1023$。所以，实际上浮点数的指数值为$2^{exponent-1023}$。本来，$exponent-1023$的值应该是-1023 到 1024，但是-1023(指数位全部为0)和1024(指数位全部为1)被保留用作表示特殊数字，这一点我们后面会提到。所以，$exponent-1023$的取值范围是-1022 到 1023。</p>
+<ul>
+<li>52位分数位(其实共计53位，但是第一位1被省略)</li>
+</ul>
+<p>52位分数位指的是计数法的小数部分，但是省略了一个1，所以其实分数位段实际代表的值是二进制的 $1.b_{51}b_{50}…b_0$。</p>
+<p>综上，双精度浮点的64位如下图所示(<a href="https://upload.wikimedia.org/wikipedia/commons/a/a9/IEEE_754_Double_Floating_Point_Format.svg" target="_blank" rel="noopener">转自wikipedia</a>):</p>
+<img src="/2018/05/29/javascript-float/1.svg">
+<p>所以我们可以得出如下公式:</p>
+<p>$$ float = (-1)^{sign}\left(1 + \sum_{i=1}^{52}b_{52-i}2^{-i}\right)\times2^{exponent-1023} $$</p>
+<p>但是上述表达式只是针对规约浮点数的，针对非规约浮点数，我们有另外一个公式:</p>
+<p>$$ subnormal\ \ float = (-1)^{sign}\left(\sum_{i=1}^{52}b_{52-i}2^{-i}\right)\times2^{1-1023} $$</p>
+<h3 id="规约形式的浮点数"><a class="header-anchor" href="#规约形式的浮点数"></a>规约形式的浮点数</h3>
+<p>“规约”是指用唯一确定的浮点形式去表示一个值。在IEEE-754标准中，当指数部分的实际值exponent的范围为$0 &lt; exponent &lt; 2^e - 1$时，这个数就叫做规约形式的浮点数。还记得我们在前面说过双精度浮点数的指数范围e是-1022 到 1023吧？所以exponent的范围为1到2046时，代表规约形式的浮点数，当exponent为0和2047时，有别的含义，接着向下看。</p>
+<h3 id="特殊值"><a class="header-anchor" href="#特殊值"></a>特殊值</h3>
+<p>上面提到exponent为0和2047时有特殊的含义，在规范中，有三个特殊的值：</p>
+<ul>
+<li>当exponent为0，且小数部分为0时，浮点数值为±0(取决于符号位)</li>
+<li>当exponent为$2^e-1$，且小数部分为0时，浮点数值为无穷±Inifinity</li>
+<li>当exponent为$2^e-1$，且小数部分不为0时，代表NaN</li>
+</ul>
+<p>所以现在知道我们之前提到为什么规约形式的exponent不能为0和2047了吧。</p>
+<h3 id="非规约形式的浮点数-subnormal-numbers"><a class="header-anchor" href="#非规约形式的浮点数-subnormal-numbers"></a>非规约形式的浮点数(subnormal numbers)</h3>
+<p>当$exponent = 0$时，且小数部分不为0，这就是非规约形式的浮点数。它用来解决填补绝对值意义下最小规格数与零的距离。非规约浮点数源于70年代末IEEE浮点数标准化专业技术委员会酝酿浮点数二进制标准时，Intel公司对渐进式溢出（gradual underflow）的力荐。</p>
+<p>我们假设没有非规约浮点数，那么针对双精度浮点数，规约形式的最小浮点数为$a = 1.0 * 2^{-1022}$(分数部分全0)，离它最近的规约浮点数则为$b = 1.0*(1.0+2^{-52})*2^{-1022}$(分数部分为0000…0001)。那么a与0之间的距离，是a与b之间的距离的$2^{52}$倍！可以说是非常快速的就下溢到了0。这样可能导致一种情况就是，两个非常小的浮点数相减的结果会变成0。</p>
+<p>采用非规约形式后，当$exponent = 0$时，且小数部分不为0时，我们称之为非规约形式的浮点数，满足在文章前面提到的表达式：</p>
+<p>$$ subnormal\ \ float = (-1)^{sign}\left(\sum_{i=1}^{52}b_{52-i}2^{-i}\right)\times2^{1-1023} $$</p>
+<p>讲道理我也不知道为什么这里指数全为0的情况下，计算的时候却是$2^{1-1023}=2^{-1022}$, 当作一种规范吧。</p>
+<h3 id="舍入模式"><a class="header-anchor" href="#舍入模式"></a>舍入模式</h3>
+<p>0.1的二进制是$0.000\overline{1100}$的无限循环, 那么显然的，52位的分数位并不能存入这些无限循环的小数位，那么势必就要采取舍入。IEEE-754共有5种舍入模式:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Mode / Example Value</th>
+<th style="text-align:center">+11.5</th>
+<th>+12.5</th>
+<th>−11.5</th>
+<th>−12.5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">to nearest, ties to even</td>
+<td style="text-align:center">+12.0</td>
+<td>+12.0</td>
+<td>−12.0</td>
+<td>−12.0</td>
+</tr>
+<tr>
+<td style="text-align:center">to nearest, ties away from zero</td>
+<td style="text-align:center">+12.0</td>
+<td>+13.0</td>
+<td>−12.0</td>
+<td>−13.0</td>
+</tr>
+<tr>
+<td style="text-align:center">toward 0</td>
+<td style="text-align:center">+11.0</td>
+<td>+12.0</td>
+<td>−11.0</td>
+<td>−12.0</td>
+</tr>
+<tr>
+<td style="text-align:center">toward +∞</td>
+<td style="text-align:center">+12.0</td>
+<td>+13.0</td>
+<td>−11.0</td>
+<td>−12.0</td>
+</tr>
+<tr>
+<td style="text-align:center">toward −∞</td>
+<td style="text-align:center">+11.0</td>
+<td>+12.0</td>
+<td>−12.0</td>
+<td>−13.0</td>
+</tr>
+</tbody>
+</table>
+<p>默认采用的舍入模式为: Round to nearest, ties to even。在10进制里很好理解，但是在二进制中，可能就稍微有点怪了。查阅了一些资料，二进制模式下应该是这样的：</p>
+<p>浮点数的分数位是$0.b_{51}b_{50}…b_0$，共52位。对于一些需要超过52位来表示的数字，我们假设有如下形式</p>
+<p>$$0.b_{51}b_{50}…b_0a_0a_1a_2…a_n$$</p>
+<p>注意，这并不代表它一定是无限循环的。现在，由于双精度浮点数只能保留52位分数，所以我们只能保留到$b_0$那一位。</p>
+<ul>
+<li>若$a_0$为0(即$a_0$为0，$a_1到a_n$为任意值)</li>
+</ul>
+<p>舍去(round down，根据Round to nearest原则)</p>
+<ul>
+<li>若$a_0$为1，并且$a_1到a_n$中至少有一个为1</li>
+</ul>
+<p>升位(round up，根据Round to nearest)</p>
+<ul>
+<li>若$a_0$为1，并且$a_1到a_n$都为0</li>
+</ul>
+<p>此时, 无论round up还是round down，得到的结果和原数值的距离都是一样的，所以Round to nearest规则已不适用，我们需要使用ties to even规则了。在二进制中，只要最后一位是0，那么就是even。</p>
+<p>所以在这个情况下，若$b_0$为0，那么我们就round down; 如果$b_0$为1，那么我们就round up。</p>
+<p>看到这里，我们就以0.1来举例吧。0.1用二进制表示为: $0.000\overline{1100}$, 根据双精度浮点数的标准，则表示为:</p>
+<p>$$ (-1)^0 * 1.\underbrace{1001100…11001}_{52位}\ 100\overline{1100} * 2^{-4} $$</p>
+<p>但是，我们只有52位。根据上面提到的策略，则0.1在IEEE-754双精度中实际会舍入为如下表达:</p>
+<p>$$ (-1)^0 * 1.\underbrace{1001100…11010}_{52位} * 2^{-4} $$</p>
+<p>64位整体结构如下图:</p>
+<p>$$ \underbrace{0} _ {标志位}\underbrace{01111111011} _ {指数位}\ \underbrace{1001100…11010} _ {52位} $$</p>
+<h3 id="规则总结"><a class="header-anchor" href="#规则总结"></a>规则总结</h3>
+<p>所有规则总结如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">浮点数形式或值</th>
+<th style="text-align:left">指数exponent值</th>
+<th style="text-align:left">分数部分值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">±0</td>
+<td style="text-align:left">0</td>
+<td style="text-align:left">0</td>
+</tr>
+<tr>
+<td style="text-align:left">非规约形式</td>
+<td style="text-align:left">0</td>
+<td style="text-align:left">非0</td>
+</tr>
+<tr>
+<td style="text-align:left">规约形式</td>
+<td style="text-align:left">1到$2^e-2$</td>
+<td style="text-align:left">任意</td>
+</tr>
+<tr>
+<td style="text-align:left">±Inifinity</td>
+<td style="text-align:left">$2^e-1$</td>
+<td style="text-align:left">0</td>
+</tr>
+<tr>
+<td style="text-align:left">NaN</td>
+<td style="text-align:left">$2^e-1$</td>
+<td style="text-align:left">非0</td>
+</tr>
+</tbody>
+</table>
+<h2 id="回到正题"><a class="header-anchor" href="#回到正题"></a>回到正题</h2>
+<p>好了，在看了上一章节的内容，我们开始试着解释这些“灵异”现象吧！下面我们先有请三位运动员出场:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">十进制值</th>
+<th style="text-align:center">指数值</th>
+<th style="text-align:center">分数部分52位</th>
+<th style="text-align:center">计算式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">0.1</td>
+<td style="text-align:center">$2^{1019-1023}=2^{-4}$</td>
+<td style="text-align:center">$10011001…10011010_2$</td>
+<td style="text-align:center">$-1^0 * 1.100…11010_2*2^{-4}$</td>
+</tr>
+<tr>
+<td style="text-align:center">0.2</td>
+<td style="text-align:center">$2^{1020-1023}=2^{-3}$</td>
+<td style="text-align:center">$10011001…10011010_2$</td>
+<td style="text-align:center">$-1^0 * 1.100…11010_2*2^{-3}$</td>
+</tr>
+<tr>
+<td style="text-align:center">0.3</td>
+<td style="text-align:center">$2^{1021-1023}=2^{-2}$</td>
+<td style="text-align:center">$00110011…0011_2$</td>
+<td style="text-align:center">$-1^0 * 1.100…11010_2*2^{-2}$</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mission-1"><a class="header-anchor" href="#mission-1"></a>Mission 1</h3>
+<p>先来看看加法</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="number">0.1</span> + <span class="number">0.2</span> <span class="comment">// 0.30000000000000004</span></span><br></pre></td></tr></table></figure>
+<p>然后我们来做做二进制加法:</p>
+<p>$$ \begin{align}<br>
+&amp; \quad  0.00011001100110011001100110011001100110011001100110011010 _ 2 \\
+&amp; + 0.00110011001100110011001100110011001100110011001100110100 _ 2 \\
+&amp; = 0.01001100110011001100110011001100110011001100110011001110 _ 2 \\
+&amp; = 1.\underbrace{001100…11001100111_2} _ {53位} * 2^{-2}
+\end{align}
+$$</p>
+<p>显然，运算的结果超出了界限，根据之前提到的舍入原则，我们最终得到的结果为:</p>
+<p>$$ 1.\underbrace{001100…1100110100_2}_{52位} * 2^{-2} $$</p>
+<p>ok, 那么分数部分值就是:</p>
+<p>$$1.0 + 2^{-3} + 2^{-4} + 2^{-7} + 2^{-8} + … + 2^{-47} + 2^{-48} + 2^{-50}$$</p>
+<p>算出来值为</p>
+<p>$$1.20000000000000017763568394002504646778106689453125$$</p>
+<p>注意，这个值在二进制里可是可以精确算出来的哦。</p>
+<p>再乘以指数$2^{-2}$，那么结果就是</p>
+<p>$$0.3000000000000000444089209850062616169452667236328125$$</p>
+<p>IEEE-754规定，双精度浮点数默认为我们保留到17位有效数字。所以其实真正的值是下图:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">0.1 + 0.2 // 0.30000000000000004</span><br><span class="line">(0.1 + 0.2).toFixed(100) // 0.3000000000000000444089209850062616169452667236328125 后面的0省略</span><br><span class="line">0.3.toFixed(100) // 0.299999999999999988897769753748434595763683319091796875 后面的0省略</span><br></pre></td></tr></table></figure>
+<p>至于上图0.3为啥是那个值，就不用我多说了吧?</p>
+<h3 id="mission-2"><a class="header-anchor" href="#mission-2"></a>Mission 2</h3>
+<p>看了加法，我们来看看减法好了</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="number">0.3</span> - <span class="number">0.2</span> <span class="comment">// 0.09999999999999998</span></span><br><span class="line"><span class="number">0.2</span> - <span class="number">0.1</span> <span class="comment">// 0.1</span></span><br></pre></td></tr></table></figure>
+<p>等等, 0.2 - 0.1竟然是正确的!?。醒醒，怎么可能，这不过是四舍五入恰好变成了0.1罢了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">(<span class="number">0.3</span><span class="number">-0.2</span>).toFixed(<span class="number">100</span>) <span class="comment">// 0.09999999999999997779553950749686919152736663818359375 后面的0省略</span></span><br><span class="line"></span><br><span class="line">(<span class="number">0.2</span><span class="number">-0.1</span>).toFixed(<span class="number">100</span>) <span class="comment">// 0.1000000000000000055511151231257827021181583404541015625 后面的0省略</span></span><br></pre></td></tr></table></figure>
+<p>我们就再详细看看0.2-0.1吧:</p>
+<p>$$\begin{align}<br>
+&amp; \quad  0.00110011001100110011001100110011001100110011001100110100_2 \\
+&amp; -      0.00011001100110011001100110011001100110011001100110011010_2 \\
+&amp; =      0.00011001100110011001100110011001100110011001100110011010_2 \\
+&amp; =      1.\underbrace{1001100…110011010_2}_{53位} * 2^{-4}
+\end{align} $$</p>
+<p>其实我们可以看出来，再经过了舍入后，0.2和0.1依然保持了两倍的关系，所以相减的值其实就是0.1在双精度浮点数中代表的值，所以，下面的等式是成立的：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="number">0.1</span>.toFixed(<span class="number">100</span>) == (<span class="number">0.2</span><span class="number">-0.1</span>).toFixed(<span class="number">100</span>) <span class="comment">// 0.1000000000000000055511151231257827021181583404541015625 后面的0省略</span></span><br></pre></td></tr></table></figure>
+<h3 id="mission-3"><a class="header-anchor" href="#mission-3"></a>Mission 3</h3>
+<p>再来看看乘法0.1 * 0.2</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="number">0.1</span> * <span class="number">0.2</span> <span class="comment">// 0.020000000000000004</span></span><br></pre></td></tr></table></figure>
+<p>$$\begin{align}<br>
+&amp; \quad  0.00110011001100110011001100110011001100110011001100110100_2 \\
+&amp; *      0.00011001100110011001100110011001100110011001100110011010_2 \\
+\end{align} $$</p>
+<p>这乘法手算头有点痛啊，写个代码算一下结果是:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="number">0.0000010100011110101110000101000111101011100001010001111011</span> <span class="number">100001010001111010111000010100011110101110000101001000</span></span><br></pre></td></tr></table></figure>
+<p>得到如下结构:</p>
+<p>$$ 1.\underbrace{0100011110101110000101000111101011100001010001111011_2}_{52位}100001… * 2^{-6} $$</p>
+<p>再根据舍入规则，我们round up，得到:</p>
+<p>$$ 1.\underbrace{0100011110101110000101000111101011100001010001111100_2}_{52位}* 2^{-6} $$</p>
+<p>然后我们来算一算:</p>
+<p>$$2^{-6} + 2^{-8} + 2^{-12} + 2^{-13} + 2^{-14} + … + 2^{-54} + 2^{-55} + 2^{-56}$$</p>
+<p>结果为: 0.02000000000000000388578058618804789148271083831787109375</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="number">0.1</span> * <span class="number">0.2</span> <span class="comment">// 0.020000000000000004</span></span><br><span class="line">(<span class="number">0.1</span> * <span class="number">0.2</span>).toFixed(<span class="number">100</span>) <span class="comment">//0.02000000000000000388578058618804789148271083831787109375</span></span><br></pre></td></tr></table></figure>
+<p>和js的一模一样。</p>
+<h3 id="mission-4"><a class="header-anchor" href="#mission-4"></a>Mission 4</h3>
+<p>我们最后再看看一些边界值的情况吧。</p>
+<ul>
+<li>
+<p>无穷大</p>
+<p>规范已经规定了是Infinity，就是在指数位最大，分数位为0的情况下满足，所以这也就解释了为什么如下的结果:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="built_in">Math</span>.pow(<span class="number">2</span>,<span class="number">1024</span>) <span class="comment">// Infinity</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>最大值</p>
+<p>当指数位为1023，分数位全部为1时，我们可以取得最大的浮点数值:</p>
+<p>$$\begin{align}
+&amp; \quad \underbrace{0} _ {标志位} \underbrace{11111111110} _ {指数位}\ \underbrace{111…111} _ {52位} \\
+&amp; = 2^{1023} * (1 + (1 - 2^{-52} )) \\
+&amp; \approx 1.7976931348623157e+308
+\end{align}$$</p>
+<p>也就是Number.MAX_VALUE</p>
+</li>
+<li>
+<p>最小正数</p>
+<p>当指数位全部为0，分数位为1，我们得到js可以表示的最小正数，更准确的说，应该是最小非规约浮点数:</p>
+<p>$$\begin{align}
+&amp; \quad \underbrace{0} _ {标志位} \underbrace{00000000000} _ {指数位}\ \underbrace{000…001} _ {52位} \\
+&amp; = 2^{-1022} * 2^{-52} \\
+&amp; = 2^{-1074} \\
+&amp; \approx 4.9*10^{−324}
+\end{align}$$</p>
+<p>然后在js中，在展示的时候应该是做了四舍五入:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="built_in">Number</span>.MIN_VALUE <span class="comment">// 5e-324</span></span><br><span class="line"><span class="built_in">Math</span>.pow(<span class="number">2</span>,<span class="number">-1074</span>) <span class="comment">// 5e-324</span></span><br><span class="line"><span class="built_in">Math</span>.pow(<span class="number">2</span>,<span class="number">-1075</span>) <span class="comment">// 0</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>最大的安全整数</p>
+<p>按照前面的叙述，我们总共有53位的分数位（包含隐去的第一位1)，所以我们能表达的最精确的整数就是当分数位全部为1，然后指数位为52的时候，也就是:</p>
+<p>$$\begin{align}
+&amp; \quad \underbrace{0} _ {标志位} \underbrace{10000110011} _{ 指数位}\ \underbrace{111…111} _ {52位} \\
+&amp; = 2^{53} -1 \\
+&amp; = 9007199254740991
+\end{align}$$</p>
+<p>当从这个整数开始逐步加1，就有可能丢失有效值，所以就有了最大安全整数的概念。ecma的es6规范定义Number.MAX_SAFE_INTEGER如下:</p>
+<p>The value of Number.MAX_SAFE_INTEGER is the largest integer n such that n and n + 1 are both exactly representable as a Number value.The value of Number.MAX_SAFE_INTEGER is 9007199254740991 ($2^{53}−1$).</p>
+<p>有趣的是，chrome里这个值是9007199254740992。但是这个数是不符合es6规范的，因为9007199254740992 + 1 仍然是 9007199254740992。其实我猜测chrome可能想表达的意思是9007199254740992依然可以准确的表达, 这里大家懂了就行。</p>
+<p>下面我们来看看为什么有如下的情况吧:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="number">9007199254740992</span> + <span class="number">1</span> <span class="comment">// 9007199254740992</span></span><br><span class="line"><span class="number">9007199254740992</span> + <span class="number">3</span> <span class="comment">// 9007199254740996</span></span><br></pre></td></tr></table></figure>
+<p><strong>9007199254740993</strong>表示如下:</p>
+<p>$$\begin{align}
+&amp; \quad \underbrace{0} _ {标志位} \underbrace{10000110100} _ {指数位}\ \underbrace{000…000} _ {52位}\ 1 \\
+\end{align}$$</p>
+<p>虽然分数位52位是0，53位是1，根据ties to even原则，这个1也要被省略，所以9007199254740993 == 9007199254740992为true</p>
+<p><strong>9007199254740995</strong>表示如下:</p>
+<p>$$\begin{align}
+&amp; \quad \underbrace{0} _ {标志位} \underbrace{10000110100} _ {指数位}\ \underbrace{000…001} _ {52位}\ 1 \\
+\end{align}$$</p>
+<p>根据ties to even原则round up，得到:</p>
+<p>$$\begin{align}
+&amp; \quad \underbrace{0} _ {标志位} \underbrace{10000110100} _ {指数位}\ \underbrace{000…001} _ {52位}\ 1 \\
+&amp; = \underbrace{0} _ {标志位} \underbrace{10000110100} _ {指数位}\ \underbrace{000…010} _ {52位}\ \\
+&amp; = 2^{53} * 1.\underbrace{000…010} _ {52位} \\
+&amp; = 9007199254740992 + 4 \\
+&amp; = 9007199254740996
+\end{align}$$</p>
+</li>
+</ul>
+<h2 id="总结"><a class="header-anchor" href="#总结"></a>总结</h2>
+<p>一堆0和1，看的我有点头晕了😄。最后，相信你在看了上面的内容后，能够解释下面这个例子里toFixed函数失效的原因了吧?</p>
+  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="number">1.335</span>.toFixed(<span class="number">2</span>) <span class="comment">// 1.33</span></span><br></pre></td></tr></table></figure>
+<h2 id="参考资料"><a class="header-anchor" href="#参考资料"></a>参考资料</h2>
+<ol>
+<li><a href="https://en.wikipedia.org/wiki/IEEE_754" target="_blank" rel="noopener">wikipedia IEEE-754</a> IEEE-754标准</li>
+<li><a href="https://en.wikipedia.org/wiki/Double-precision_floating-point_format" target="_blank" rel="noopener">wikipedia double precision floating point format</a> 双精度浮点数</li>
+<li><a href="https://github.com/MikeMcl/big.js/" target="_blank" rel="noopener">big.js</a> 一个用于数学计算的js库</li>
+<li><a href="http://weitz.de/ieee/" target="_blank" rel="noopener">IEEE-754 计算器</a> 一个用js实现的在线计算IEEE-754标准的网页</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/javascript/" rel="tag"># javascript</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/22/2018-05-22-vue-component/" rel="next" title="vue源代码学习-组件">
+                <i class="fa fa-chevron-left"></i> vue源代码学习-组件
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/23/vue-router/" rel="prev" title="vue源代码学习-vue-router">
+                vue源代码学习-vue-router <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+  
+  <div id="container" class = "post-block"></div>
+
+
+<script src="/lib/gitment/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  link: 'https://github.com/FatShen3/Blog/issues',
+  id: 'javascript的精度问题', // 可选。默认为 location.href, 这个会用作label，目前最长50个字符
+  owner: 'FatShen3',
+  repo: 'Blog',
+  oauth: {
+    client_id: 'df4cf8f5ace90705ef47',
+    client_secret: 'f3a7368660650339761f5b7b9b2a6040a7828490',
+  },
+})
+gitment.render('container')
+</script>
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars0.githubusercontent.com/u/25524169?s=460&v=4"
+                alt="Fat Shen" />
+            
+              <p class="site-author-name" itemprop="name">Fat Shen</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/FatShen3" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ieee-754"><span class="nav-number">2.</span> <span class="nav-text">IEEE-754</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一些约定"><span class="nav-number">2.1.</span> <span class="nav-text">一些约定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-number">2.2.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#规约形式的浮点数"><span class="nav-number">2.3.</span> <span class="nav-text">规约形式的浮点数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#特殊值"><span class="nav-number">2.4.</span> <span class="nav-text">特殊值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#非规约形式的浮点数-subnormal-numbers"><span class="nav-number">2.5.</span> <span class="nav-text">非规约形式的浮点数(subnormal numbers)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#舍入模式"><span class="nav-number">2.6.</span> <span class="nav-text">舍入模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#规则总结"><span class="nav-number">2.7.</span> <span class="nav-text">规则总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#回到正题"><span class="nav-number">3.</span> <span class="nav-text">回到正题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mission-1"><span class="nav-number">3.1.</span> <span class="nav-text">Mission 1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mission-2"><span class="nav-number">3.2.</span> <span class="nav-text">Mission 2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mission-3"><span class="nav-number">3.3.</span> <span class="nav-text">Mission 3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mission-4"><span class="nav-number">3.4.</span> <span class="nav-text">Mission 4</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fat Shen</span>
+
+  
+</div>
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("2A6ElsKPeJw5b0mJv0kibH2p-gzGzoHsz", "nzFgQKhNwFT6c4CIityIE74C");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+  
+
+  
+
+</body>
+</html>

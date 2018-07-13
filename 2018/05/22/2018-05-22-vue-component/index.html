@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-cn">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="vue,mvvm," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="我记得我之前在vue官网看见这么一句介绍：组件是Vue.js最强大的功能之一，怎么最近上去看的时候就没了？囧。不管怎么样，lets do it。">
+<meta name="keywords" content="vue,mvvm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vue源代码学习-组件">
+<meta property="og:url" content="http://fatshen3.cn/2018/05/22/2018-05-22-vue-component/index.html">
+<meta property="og:site_name" content="FatShen&#39;s Blog">
+<meta property="og:description" content="我记得我之前在vue官网看见这么一句介绍：组件是Vue.js最强大的功能之一，怎么最近上去看的时候就没了？囧。不管怎么样，lets do it。">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="http://fatshen3.cn/2018/05/22/2018-05-22-vue-component/1.png">
+<meta property="og:updated_time" content="2018-07-12T09:26:33.988Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="vue源代码学习-组件">
+<meta name="twitter:description" content="我记得我之前在vue官网看见这么一句介绍：组件是Vue.js最强大的功能之一，怎么最近上去看的时候就没了？囧。不管怎么样，lets do it。">
+<meta name="twitter:image" content="http://fatshen3.cn/2018/05/22/2018-05-22-vue-component/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'B7WL0CZLJX',
+      apiKey: 'd54d7b943d8fdc2d08a862405d2985e7',
+      indexName: 'HEXO_ALGOLIA_INDEXING_KEY',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://fatshen3.cn/2018/05/22/2018-05-22-vue-component/"/>
+
+
+
+
+
+  <title>vue源代码学习-组件 | FatShen's Blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-cn">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">FatShen's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://fatshen3.cn/2018/05/22/2018-05-22-vue-component/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Fat Shen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars0.githubusercontent.com/u/25524169?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="FatShen's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">vue源代码学习-组件</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-22T15:12:26+08:00">
+                2018-05-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/前端/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+          
+          
+             <span id="/2018/05/22/2018-05-22-vue-component/" class="leancloud_visitors" data-flag-title="vue源代码学习-组件">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>我记得我之前在vue官网看见这么一句介绍：组件是Vue.js最强大的功能之一，怎么最近上去看的时候就没了？囧。不管怎么样，lets do it。</p>
+<a id="more"></a>
+<h2 id="组件也是vue的实例"><a class="header-anchor" href="#组件也是vue的实例"></a>组件也是Vue的实例</h2>
+<p>组件其实也是一个Vue的实例，最大的区别可能就是不需要传入el这样的Vue根实例才需要的属性。顺着<code>Vue.component</code>方法来看看组件是如何被创建的吧。</p>
+<p><code>Vue.component</code>在core/global-api/assets.js中, 当传入组件定义时，实际就是调用了Vue.extend方法</p>
+<p>还记得Vue的构造函数吧？</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Vue</span> (<span class="params">options</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span> &amp;&amp;</span><br><span class="line">    !(<span class="keyword">this</span> <span class="keyword">instanceof</span> Vue)</span><br><span class="line">  ) &#123;</span><br><span class="line">    warn(<span class="string">'Vue is a constructor and should be called with the `new` keyword'</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">this</span>._init(options)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>刚开始说组件是一个Vue的实例，更具体一点，其实组件是继承自Vue的，我们只要看看<code>Vue.extend</code>的实现就知道了:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// core/global-api/extend.js</span></span><br><span class="line"></span><br><span class="line">Vue.extend = <span class="function"><span class="keyword">function</span> (<span class="params">extendOptions: Object</span>): <span class="title">Function</span> </span>&#123; <span class="comment">// 组件继承VUE</span></span><br><span class="line">   ......</span><br><span class="line">   </span><br><span class="line">   <span class="keyword">const</span> Sub = <span class="function"><span class="keyword">function</span> <span class="title">VueComponent</span> (<span class="params">options</span>) </span>&#123; <span class="comment">// 构造函数其实是一样一样的</span></span><br><span class="line">      <span class="keyword">this</span>._init(options)</span><br><span class="line">    &#125;</span><br><span class="line">    Sub.prototype = <span class="built_in">Object</span>.create(Super.prototype) <span class="comment">// 继承自VUE</span></span><br><span class="line">    Sub.prototype.constructor = Sub <span class="comment">// prototype的constructor指向自身构造函数</span></span><br><span class="line">    Sub.cid = cid++</span><br><span class="line">    Sub.options = mergeOptions(</span><br><span class="line">      Super.options,</span><br><span class="line">      extendOptions</span><br><span class="line">    )</span><br><span class="line">   </span><br><span class="line">   ......</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> Sub</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样就很明显的看出来了，组件继承自Vue，this._init其实就是Vue.prototype上的方法。所以，组件在创建实例的时候，其实也是和根节点Vue实例创建是一样的，当然其中会有根据实例是组件的很多特殊处理。</p>
+<p>那么子组件是在什么时候创建的呢? 是在父节点的Vue render函数执行的时候创建的。注意这里说的是父节点，因为毕竟组件也会嵌套嘛。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&lt;div id = <span class="string">"app"</span>&gt;</span><br><span class="line">    &lt;component-ul&gt;</span><br><span class="line">      &lt;component-li v-<span class="keyword">for</span> = <span class="string">"row in rows"</span> :content = <span class="string">"row"</span> :key = <span class="string">"row"</span>&gt;<span class="xml"><span class="tag">&lt;/<span class="name">component-li</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">component-ul</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">&lt;script&gt;</span><br><span class="line">	Vue.component(<span class="string">'component-ul'</span>, &#123;</span><br><span class="line">	  template: <span class="string">'&lt;ul&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/ul&gt;'</span></span><br><span class="line">	&#125;)</span><br><span class="line">	    </span><br><span class="line">	Vue.component(<span class="string">'component-li'</span>, &#123;</span><br><span class="line">	  props: [<span class="string">'content'</span>],</span><br><span class="line">	  template: <span class="string">'&lt;li&gt;&#123;&#123;content&#125;&#125;&lt;/li&gt;'</span></span><br><span class="line">	&#125;)</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">new</span> Vue(&#123;</span><br><span class="line">	  el: <span class="string">'#app'</span>,</span><br><span class="line">	  data: &#123;</span><br><span class="line">	    rows: [<span class="string">'row1'</span>, <span class="string">'row2'</span>]</span><br><span class="line">	  &#125;</span><br><span class="line">	&#125;)</span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br></pre></td></tr></table></figure>
+<p>上面这个例子中，首先，创建<code>#app</code>的根节点Vue实例，在第一次执行render函数的过程中, 创建component-ul的实例；然后在执行component-ul的render函数时，再去创建component-li的实例并执行其render函数。</p>
+<h2 id="模板作用域"><a class="header-anchor" href="#模板作用域"></a>模板作用域</h2>
+<p>看Vue组件教程的时候一定看见过这么一句话: 父组件模板的所有东西都会在父级作用域内编译；子组件模板的所有东西都会在子级作用域内编译。</p>
+<p>这一个设计其实是很自然和合理的。当我们使用嵌套组件、插槽slot时，甚至于其实我们在使用组件的时候就已经嵌套了(因为还有一个根实例的vue对象)，那么我们不可能在子组件的模板里依然去使用父组件的数据，这样过于耦合。在vue中, 父组件通过prop向子组件传递数据；子组件通过事件向父组件发送消息。</p>
+<p>如何来理解各个组件有自己的作用域呢？我们在之前已经知道了，每个组件都有自己的render函数，这个render函数在执行时其实就可以理解为组件自己的作用域了。</p>
+<p>以上一节为例，其中涉及到一个根节点vue和两个组件，它们的render函数分别如下:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// 根节点</span></span><br><span class="line">(<span class="function"><span class="keyword">function</span> <span class="title">anonymous</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">with</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> _c(<span class="string">'div'</span>, &#123;</span><br><span class="line">            attrs: &#123;</span><br><span class="line">                <span class="string">"id"</span>: <span class="string">"app"</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, [_c(<span class="string">'component-ul'</span>, _l((rows), <span class="function"><span class="keyword">function</span>(<span class="params">row</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> _c(<span class="string">'component-li'</span>, &#123;</span><br><span class="line">                key: row,</span><br><span class="line">                attrs: &#123;</span><br><span class="line">                    <span class="string">"content"</span>: row</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;)), _v(<span class="string">" "</span>), _c(<span class="string">'component-ul'</span>)], <span class="number">1</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// component-ul</span></span><br><span class="line">(<span class="function"><span class="keyword">function</span> <span class="title">anonymous</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">with</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> _c(<span class="string">'ul'</span>, [_t(<span class="string">"default"</span>)], <span class="number">2</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// component-li</span></span><br><span class="line">(<span class="function"><span class="keyword">function</span> <span class="title">anonymous</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">with</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> _c(<span class="string">'li'</span>, [_v(_s(content))])</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>这样就很清楚了，每次render函数在执行时，都是将自身实例作为this，所以template模板里的变量也是相对应的。</p>
+<h2 id="vue自带的组件"><a class="header-anchor" href="#vue自带的组件"></a>Vue自带的组件</h2>
+<p>下面我们来看看Vue自己实现的组件吧</p>
+<h3 id="keep-alive"><a class="header-anchor" href="#keep-alive"></a>keep-alive</h3>
+<p><code>keep-alive</code>主要用来实现保存动态组件，会缓存不活动的组件实例，而不是销毁它们。它的实现在core/components/keep-alive.js中。实现不复杂，每个<code>keep-alive</code>组件自身会从其自身的<code>$slot.default</code>中的第一个子组件作为保存的组件，保存下该组件的实例和<code>key</code>，并且为其<code>vnode</code>设置标志位<code>keepAlive=true</code>。那么在之后比如<code>is</code>或者<code>v-if</code>等本来该导致该子组件销毁的情况下，将不会初始化组件或者调用组件的<code>$destroy</code>,取而代之去执行<code>activated</code>或者<code>deactivated</code>钩子。</p>
+<h3 id="transition"><a class="header-anchor" href="#transition"></a>transition</h3>
+<p><code>transition</code>主要用来提供在插入、更新、移除dom时，实现过渡效果。组件的实现在platforms/web/runtime/components/transition.js中。在执行<code>transition</code>的render函数时主要做了以下两件事:</p>
+<ol>
+<li>vue会找出执行过渡的vnode节点，并且提取出transition相关参数以供后面patch过程中执行钩子的时候调用，然后来实现过渡特效。</li>
+<li>在配置了out-in、in-out的模式时，会为vnode对应的增加钩子函数。比如out-in模式，本来新vnode会显示，但是这里vue会先返回空vnode节点，然后在旧节点消失时的钩子函数afterLeave里，去执行$forceUpdate再次渲染出新节点，实现out-in的效果。</li>
+</ol>
+<p>所以其实过渡状态主要的逻辑其实是在patch过程中，vue调用vnode的enter、leave模块的钩子函数的。这部分代码主要在platforms/web/runtime/modules/transition.js中。以enter的过程为例，我们看看主要的一段实现:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">const</span> cb = el._enterCb = once(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (expectsCSS) &#123;</span><br><span class="line">      removeTransitionClass(el, toClass)</span><br><span class="line">      removeTransitionClass(el, activeClass)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...省略</span></span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">   <span class="comment">// ...省略</span></span><br><span class="line"></span><br><span class="line">   addTransitionClass(el, startClass)</span><br><span class="line">   addTransitionClass(el, activeClass)</span><br><span class="line">   nextFrame(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">     addTransitionClass(el, toClass)</span><br><span class="line">     removeTransitionClass(el, startClass)</span><br><span class="line">     <span class="keyword">if</span> (!cb.cancelled &amp;&amp; !userWantsControl) &#123;</span><br><span class="line">       <span class="keyword">if</span> (isValidDuration(explicitEnterDuration)) &#123;</span><br><span class="line">         setTimeout(cb, explicitEnterDuration)</span><br><span class="line">       &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">         whenTransitionEnds(el, type, cb)</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;)</span><br></pre></td></tr></table></figure>
+<p>可以看到, activeClass贯穿始终，在动画结束后才会移除， startClass在nextFrame后移除, toClass在nextFrame后加入。 Vue nextFrame的实现是这样的:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> raf = inBrowser</span><br><span class="line">  ? <span class="built_in">window</span>.requestAnimationFrame</span><br><span class="line">    ? <span class="built_in">window</span>.requestAnimationFrame.bind(<span class="built_in">window</span>)</span><br><span class="line">    : setTimeout</span><br><span class="line">  : <span class="comment">/* istanbul ignore next */</span> fn =&gt; fn()</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">nextFrame</span> (<span class="params">fn: Function</span>) </span>&#123;</span><br><span class="line">  raf(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    raf(fn)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>文档写的是插入(移除)之后的下一帧，我理解应该是指要确保在enter class生效后（即经过一帧)，然后在下一帧之前加入enter-to对应的class。所以这里会调用两次raf函数，先加入enter class(一闪而过，毕竟只有一帧的时间), 过了一帧后，再加入enter-to class。</p>
+<h3 id="transition-group"><a class="header-anchor" href="#transition-group"></a>transition-group</h3>
+<p><code>transition-group</code>用来实现多个元素的过渡。不同于<code>transition</code>, 它不是一个抽象的组件，而是会以真实元素呈现，默认为<code>span</code>。<code>transition-group</code>为了实现更为流畅的列表切换动画，采用了<a href="https://aerotwist.com/blog/flip-your-animations/" target="_blank" rel="noopener">FLIP</a>这种技术。在此基础上，为了实现增删过程中列表元素的移动动画、准确的记录各种操作导致的列表中元素的位置变化，所以vue将<code>transition-group</code>的render过程分为了两步: 先删除节点后patch，然后再patch最终的节点。vue中利用了beforeUpdate钩子来实现分步的patch, 整体过程如下:</p>
+<img src="/2018/05/22/2018-05-22-vue-component/1.png">
+<p>vue中源码如下(已添加注释):</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; warn, extend &#125; <span class="keyword">from</span> <span class="string">'core/util/index'</span></span><br><span class="line"><span class="keyword">import</span> &#123; addClass, removeClass &#125; <span class="keyword">from</span> <span class="string">'../class-util'</span></span><br><span class="line"><span class="keyword">import</span> &#123; transitionProps, extractTransitionData &#125; <span class="keyword">from</span> <span class="string">'./transition'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123;</span><br><span class="line">  hasTransition,</span><br><span class="line">  getTransitionInfo,</span><br><span class="line">  transitionEndEvent,</span><br><span class="line">  addTransitionClass,</span><br><span class="line">  removeTransitionClass</span><br><span class="line">&#125; <span class="keyword">from</span> <span class="string">'../transition-util'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> props = extend(&#123;</span><br><span class="line">  tag: <span class="built_in">String</span>,</span><br><span class="line">  moveClass: <span class="built_in">String</span></span><br><span class="line">&#125;, transitionProps)</span><br><span class="line"></span><br><span class="line"><span class="keyword">delete</span> props.mode</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  props,</span><br><span class="line"></span><br><span class="line">  render (h: <span class="built_in">Function</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> tag: string = <span class="keyword">this</span>.tag || <span class="keyword">this</span>.$vnode.data.tag || <span class="string">'span'</span> <span class="comment">// 默认span tag</span></span><br><span class="line">    <span class="keyword">const</span> map: <span class="built_in">Object</span> = <span class="built_in">Object</span>.create(<span class="literal">null</span>)</span><br><span class="line">    <span class="keyword">const</span> prevChildren: <span class="built_in">Array</span>&lt;VNode&gt; = <span class="keyword">this</span>.prevChildren = <span class="keyword">this</span>.children <span class="comment">// 上一次的children</span></span><br><span class="line">    <span class="keyword">const</span> rawChildren: <span class="built_in">Array</span>&lt;VNode&gt; = <span class="keyword">this</span>.$slots.default || [] <span class="comment">// 本次render的children</span></span><br><span class="line">    <span class="keyword">const</span> children: <span class="built_in">Array</span>&lt;VNode&gt; = <span class="keyword">this</span>.children = [] <span class="comment">// 用来保存要展示的节点</span></span><br><span class="line">    <span class="keyword">const</span> transitionData: <span class="built_in">Object</span> = extractTransitionData(<span class="keyword">this</span>) <span class="comment">// 获取transition数据</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; rawChildren.length; i++) &#123;</span><br><span class="line">      <span class="keyword">const</span> c: VNode = rawChildren[i]</span><br><span class="line">      <span class="keyword">if</span> (c.tag) &#123;</span><br><span class="line">        <span class="keyword">if</span> (c.key != <span class="literal">null</span> &amp;&amp; <span class="built_in">String</span>(c.key).indexOf(<span class="string">'__vlist'</span>) !== <span class="number">0</span>) &#123; <span class="comment">// 有自定义key的节点</span></span><br><span class="line">          children.push(c) <span class="comment">// 保存要展示的节点</span></span><br><span class="line">          map[c.key] = c <span class="comment">// 缓存，用于判断上一次的节点是否被保留</span></span><br><span class="line">          ;(c.data || (c.data = &#123;&#125;)).transition = transitionData <span class="comment">// 保存transition数据用于patch时调用enter、leave钩子</span></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span>) &#123;</span><br><span class="line">          <span class="keyword">const</span> opts: ?VNodeComponentOptions = c.componentOptions</span><br><span class="line">          <span class="keyword">const</span> name: string = opts ? (opts.Ctor.options.name || opts.tag || <span class="string">''</span>) : c.tag</span><br><span class="line">          warn(<span class="string">`&lt;transition-group&gt; children must be keyed: &lt;<span class="subst">$&#123;name&#125;</span>&gt;`</span>)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (prevChildren) &#123;</span><br><span class="line">      <span class="keyword">const</span> kept: <span class="built_in">Array</span>&lt;VNode&gt; = [] <span class="comment">// 被保留的节点</span></span><br><span class="line">      <span class="keyword">const</span> removed: <span class="built_in">Array</span>&lt;VNode&gt; = [] <span class="comment">// 被删除的节点</span></span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; prevChildren.length; i++) &#123;</span><br><span class="line">        <span class="keyword">const</span> c: VNode = prevChildren[i]</span><br><span class="line">        c.data.transition = transitionData</span><br><span class="line">        c.data.pos = c.elm.getBoundingClientRect() <span class="comment">// 得到节点位置</span></span><br><span class="line">        <span class="keyword">if</span> (map[c.key]) &#123;</span><br><span class="line">          kept.push(c) <span class="comment">// 本次render依然被保留</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          removed.push(c) <span class="comment">// 本次render被删除</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">this</span>.kept = h(tag, <span class="literal">null</span>, kept) <span class="comment">// 渲染保留的节点，用于之后执行第一步（即先删除节点patch)</span></span><br><span class="line">      <span class="keyword">this</span>.removed = removed</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> h(tag, <span class="literal">null</span>, children) <span class="comment">// 返回本次render节点</span></span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  beforeUpdate () &#123; <span class="comment">// 执行第一步删除节点的patch(注意这个钩子在组件本身patch之前触发)</span></span><br><span class="line">    <span class="comment">// force removing pass</span></span><br><span class="line">    <span class="keyword">this</span>.__patch__(</span><br><span class="line">      <span class="keyword">this</span>._vnode, <span class="comment">// 旧的节点</span></span><br><span class="line">      <span class="keyword">this</span>.kept, <span class="comment">// 本次render保留的节点(不包含新增的节点)</span></span><br><span class="line">      <span class="literal">false</span>, <span class="comment">// hydrating</span></span><br><span class="line">      <span class="literal">true</span> <span class="comment">// removeOnly (!important, avoids unnecessary moves)</span></span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">this</span>._vnode = <span class="keyword">this</span>.kept</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  updated () &#123; <span class="comment">// patch已触发，此时若有新增节点也已经patch</span></span><br><span class="line">    <span class="keyword">const</span> children: <span class="built_in">Array</span>&lt;VNode&gt; = <span class="keyword">this</span>.prevChildren</span><br><span class="line">    <span class="keyword">const</span> moveClass: string = <span class="keyword">this</span>.moveClass || ((<span class="keyword">this</span>.name || <span class="string">'v'</span>) + <span class="string">'-move'</span>)</span><br><span class="line">    <span class="keyword">if</span> (!children.length || !<span class="keyword">this</span>.hasMove(children[<span class="number">0</span>].elm, moveClass)) &#123; <span class="comment">// 用户有设置move class</span></span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// we divide the work into three loops to avoid mixing DOM reads and writes</span></span><br><span class="line">    <span class="comment">// in each iteration - which helps prevent layout thrashing.</span></span><br><span class="line">    children.forEach(callPendingCbs) <span class="comment">// 回调</span></span><br><span class="line">    children.forEach(recordPosition) <span class="comment">// 记录新位置</span></span><br><span class="line">    children.forEach(applyTranslation) <span class="comment">// 执行FLIP概念中的FL，让move的节点前往F(初始)状态</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// force reflow to put everything in position</span></span><br><span class="line">    <span class="comment">// assign to this to avoid being removed in tree-shaking</span></span><br><span class="line">    <span class="comment">// $flow-disable-line</span></span><br><span class="line">    <span class="keyword">this</span>._reflow = <span class="built_in">document</span>.body.offsetHeight <span class="comment">// 触发reflow</span></span><br><span class="line"></span><br><span class="line">    children.forEach(<span class="function">(<span class="params">c: VNode</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (c.data.moved) &#123; <span class="comment">// 节点相比于render前位置有变动</span></span><br><span class="line">        <span class="keyword">var</span> el: any = c.elm</span><br><span class="line">        <span class="keyword">var</span> s: any = el.style</span><br><span class="line">        addTransitionClass(el, moveClass) <span class="comment">// 添加moveclass</span></span><br><span class="line">        s.transform = s.WebkitTransform = s.transitionDuration = <span class="string">''</span> <span class="comment">// 把节点从F（初始状态) 设置为L（最终状态)</span></span><br><span class="line">        el.addEventListener(transitionEndEvent, el._moveCb = <span class="function"><span class="keyword">function</span> <span class="title">cb</span> (<span class="params">e</span>) </span>&#123; <span class="comment">// 监听transition end</span></span><br><span class="line">          <span class="keyword">if</span> (!e || <span class="regexp">/transform$/</span>.test(e.propertyName)) &#123;</span><br><span class="line">            el.removeEventListener(transitionEndEvent, cb)</span><br><span class="line">            el._moveCb = <span class="literal">null</span></span><br><span class="line">            removeTransitionClass(el, moveClass)</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  methods: &#123;</span><br><span class="line">    hasMove (el: any, <span class="attr">moveClass</span>: string): boolean &#123; <span class="comment">// 是否有move class</span></span><br><span class="line">      <span class="comment">/* istanbul ignore if */</span></span><br><span class="line">      <span class="keyword">if</span> (!hasTransition) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">/* istanbul ignore if */</span></span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>._hasMove) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>._hasMove</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">// Detect whether an element with the move class applied has</span></span><br><span class="line">      <span class="comment">// CSS transitions. Since the element may be inside an entering</span></span><br><span class="line">      <span class="comment">// transition at this very moment, we make a clone of it and remove</span></span><br><span class="line">      <span class="comment">// all other transition classes applied to ensure only the move class</span></span><br><span class="line">      <span class="comment">// is applied.</span></span><br><span class="line">      <span class="keyword">const</span> clone: HTMLElement = el.cloneNode() <span class="comment">// 用克隆的节点</span></span><br><span class="line">      <span class="keyword">if</span> (el._transitionClasses) &#123; <span class="comment">// 本身有transition class</span></span><br><span class="line">        el._transitionClasses.forEach(<span class="function">(<span class="params">cls: string</span>) =&gt;</span> &#123; removeClass(clone, cls) &#125;)</span><br><span class="line">      &#125;</span><br><span class="line">      addClass(clone, moveClass)</span><br><span class="line">      clone.style.display = <span class="string">'none'</span></span><br><span class="line">      <span class="keyword">this</span>.$el.appendChild(clone)</span><br><span class="line">      <span class="keyword">const</span> info: <span class="built_in">Object</span> = getTransitionInfo(clone)</span><br><span class="line">      <span class="keyword">this</span>.$el.removeChild(clone)</span><br><span class="line">      <span class="keyword">return</span> (<span class="keyword">this</span>._hasMove = info.hasTransform)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">callPendingCbs</span> (<span class="params">c: VNode</span>) </span>&#123;</span><br><span class="line">  <span class="comment">/* istanbul ignore if */</span></span><br><span class="line">  <span class="keyword">if</span> (c.elm._moveCb) &#123;</span><br><span class="line">    c.elm._moveCb()</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">/* istanbul ignore if */</span></span><br><span class="line">  <span class="keyword">if</span> (c.elm._enterCb) &#123;</span><br><span class="line">    c.elm._enterCb()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">recordPosition</span> (<span class="params">c: VNode</span>) </span>&#123;</span><br><span class="line">  c.data.newPos = c.elm.getBoundingClientRect() <span class="comment">// 组件patch后新的位置</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">applyTranslation</span> (<span class="params">c: VNode</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> oldPos = c.data.pos</span><br><span class="line">  <span class="keyword">const</span> newPos = c.data.newPos</span><br><span class="line">  <span class="keyword">const</span> dx = oldPos.left - newPos.left</span><br><span class="line">  <span class="keyword">const</span> dy = oldPos.top - newPos.top</span><br><span class="line">  <span class="keyword">if</span> (dx || dy) &#123; <span class="comment">// 若位置有变动</span></span><br><span class="line">    c.data.moved = <span class="literal">true</span></span><br><span class="line">    <span class="keyword">const</span> s = c.elm.style</span><br><span class="line">    s.transform = s.WebkitTransform = <span class="string">`translate(<span class="subst">$&#123;dx&#125;</span>px,<span class="subst">$&#123;dy&#125;</span>px)`</span> <span class="comment">// 将节点移动回初始位置</span></span><br><span class="line">    s.transitionDuration = <span class="string">'0s'</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a class="header-anchor" href="#总结"></a>总结</h2>
+<p>三个组件的实现都很巧妙，尤其是<code>transition-group</code>。Vue自带的三个组件和Vue自身的耦合还是比较重的，尤其是过渡组件，所以难怪Vue会提供一些基础的组件，毕竟这些组件你不看源码、不增加额外的内部功能是无法完成的。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/vue/" rel="tag"># vue</a>
+          
+            <a href="/tags/mvvm/" rel="tag"># mvvm</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/27/vue-mvvm2/" rel="next" title="vue源代码学习-mvvm2">
+                <i class="fa fa-chevron-left"></i> vue源代码学习-mvvm2
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/29/javascript-float/" rel="prev" title="javascript的精度问题">
+                javascript的精度问题 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+  
+  <div id="container" class = "post-block"></div>
+
+
+<script src="/lib/gitment/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  link: 'https://github.com/FatShen3/Blog/issues',
+  id: 'vue源代码学习-组件', // 可选。默认为 location.href, 这个会用作label，目前最长50个字符
+  owner: 'FatShen3',
+  repo: 'Blog',
+  oauth: {
+    client_id: 'df4cf8f5ace90705ef47',
+    client_secret: 'f3a7368660650339761f5b7b9b2a6040a7828490',
+  },
+})
+gitment.render('container')
+</script>
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars0.githubusercontent.com/u/25524169?s=460&v=4"
+                alt="Fat Shen" />
+            
+              <p class="site-author-name" itemprop="name">Fat Shen</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/FatShen3" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#组件也是vue的实例"><span class="nav-number">1.</span> <span class="nav-text">组件也是Vue的实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模板作用域"><span class="nav-number">2.</span> <span class="nav-text">模板作用域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vue自带的组件"><span class="nav-number">3.</span> <span class="nav-text">Vue自带的组件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#keep-alive"><span class="nav-number">3.1.</span> <span class="nav-text">keep-alive</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#transition"><span class="nav-number">3.2.</span> <span class="nav-text">transition</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#transition-group"><span class="nav-number">3.3.</span> <span class="nav-text">transition-group</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fat Shen</span>
+
+  
+</div>
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("2A6ElsKPeJw5b0mJv0kibH2p-gzGzoHsz", "nzFgQKhNwFT6c4CIityIE74C");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+  
+  
+
+  
+  
+
+  
+
+</body>
+</html>

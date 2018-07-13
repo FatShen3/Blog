@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-cn">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="python,机器学习," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="生命在于折腾，最近入坑机器学习，把python装好，也把语法和特性大致过了一遍。看了下都比较推荐斯坦福的cs231n，所以就决定学习它来作为入坑通道了😄。">
+<meta name="keywords" content="python,机器学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习-KNN">
+<meta property="og:url" content="http://fatshen3.cn/2018/04/05/机器学习-KNN/index.html">
+<meta property="og:site_name" content="FatShen&#39;s Blog">
+<meta property="og:description" content="生命在于折腾，最近入坑机器学习，把python装好，也把语法和特性大致过了一遍。看了下都比较推荐斯坦福的cs231n，所以就决定学习它来作为入坑通道了😄。">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="http://fatshen3.cn/2018/04/05/机器学习-KNN/knn-classfication.png">
+<meta property="og:image" content="http://fatshen3.cn/2018/04/05/机器学习-KNN/knn-regression.png">
+<meta property="og:updated_time" content="2018-07-12T09:26:33.981Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="机器学习-KNN">
+<meta name="twitter:description" content="生命在于折腾，最近入坑机器学习，把python装好，也把语法和特性大致过了一遍。看了下都比较推荐斯坦福的cs231n，所以就决定学习它来作为入坑通道了😄。">
+<meta name="twitter:image" content="http://fatshen3.cn/2018/04/05/机器学习-KNN/knn-classfication.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'B7WL0CZLJX',
+      apiKey: 'd54d7b943d8fdc2d08a862405d2985e7',
+      indexName: 'HEXO_ALGOLIA_INDEXING_KEY',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://fatshen3.cn/2018/04/05/机器学习-KNN/"/>
+
+
+
+
+
+  <title>机器学习-KNN | FatShen's Blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-cn">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">FatShen's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://fatshen3.cn/2018/04/05/机器学习-KNN/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Fat Shen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars0.githubusercontent.com/u/25524169?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="FatShen's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">机器学习-KNN</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-05T15:30:34+08:00">
+                2018-04-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+          
+          
+             <span id="/2018/04/05/机器学习-KNN/" class="leancloud_visitors" data-flag-title="机器学习-KNN">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>生命在于折腾，最近入坑机器学习，把python装好，也把语法和特性大致过了一遍。看了下都比较推荐斯坦福的cs231n，所以就决定学习它来作为入坑通道了😄。</p>
+<a id="more"></a>
+<h2 id="安装环境"><a class="header-anchor" href="#安装环境"></a>安装环境</h2>
+<h3 id="python"><a class="header-anchor" href="#python"></a>python</h3>
+<p>python3和python2区别还是很大的，咱还是用最新的吧</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install python3</span><br></pre></td></tr></table></figure>
+<h3 id="sklearn"><a class="header-anchor" href="#sklearn"></a>sklearn</h3>
+<p>这是一个通用的机器学习库，相比起来tensorflow应该更偏向定位于深度学习，一步一步来就先把这个装了吧</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 -m pip install scikit-learn</span><br></pre></td></tr></table></figure>
+<h3 id="numpy"><a class="header-anchor" href="#numpy"></a>numpy</h3>
+<p>一个python的科学计算的基础库，提供了多维数组和矩阵的运算。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 -m pip install numpy</span><br></pre></td></tr></table></figure>
+<h3 id="matplotlib"><a class="header-anchor" href="#matplotlib"></a>matplotlib</h3>
+<p>基于python的2D绘图库。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 -m pip install matplotlib</span><br></pre></td></tr></table></figure>
+<h3 id="debug"><a class="header-anchor" href="#debug"></a>debug</h3>
+<p>目前用的IDE是vs code, 已经有插件支持python。装好插件后，配上python3的执行环境以及lint等路径后，我随便找了个例子一跑发现numpy有个地方不对劲。function_base.py(line 4533)在import numpy的时候会抛出AttributeError和RuntimeError, 然后它直接except Exception，每次一debug就会先在那里停个n多次(调试模式打开了stop at uncaught exception)，难道父类Exception不行? 机制的我立马想到那我给except了吧。</p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="addition">+	except (AttributeError, RuntimeError):</span></span><br><span class="line"><span class="addition">+        # 为了vscode别停在这里，当然修改launch.json也行...不过那样就直接针对全部生效了, 但是没用呢！</span></span><br><span class="line"><span class="addition">+        print('catch this err just to avoid vscode stop at uncaught exception')</span></span><br><span class="line">    except Exception:</span><br><span class="line">        pass</span><br></pre></td></tr></table></figure>
+<p>修改了代码后发现竟然没有用, 跑到插件github上看，发现很多人给出的方案是在lanugh.json文件里加上下面一句话忽略异常</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">"exceptionHandling": &#123;</span><br><span class="line">	"ignore": ["AttributeError", "RuntimeError"]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>虽然有用，我觉得这样修改全局也不好，所以先暂时取消了uncaught exception功能。</p>
+<h2 id="开始hello-world"><a class="header-anchor" href="#开始hello-world"></a>开始Hello World</h2>
+<p>K最近邻(k-Nearest Neighbor，KNN)分类算法，是最简单的机器学习算法之一。它的理念就是：给定一个数据集，对于新的输入实例，找到与该实例最邻近的k个实例，服从这k个实例属于最多的那个类。所以很明显的，这个算法是一个lazy-learning算法，它并不训练(只是储存训练数据)，在分类时耗时。此外，当数据集是连续的时候，还可以用来做回归。显而易见，k值的选取以及距离函数，是影响结果的两个重要因素。</p>
+<h3 id="一些概念"><a class="header-anchor" href="#一些概念"></a>一些概念</h3>
+<h4 id="闵可夫斯基度量-minkowski-metric"><a class="header-anchor" href="#闵可夫斯基度量-minkowski-metric"></a>闵可夫斯基度量(Minkowski metric)</h4>
+<p>在sklearn的knn中默认的距离度量标准，在空间$\mathbb{R}^n$给定两个点a和b:</p>
+<p>$$X(x_{1}, x_{2}, …, x_{n})\quad And\quad Y(y_{1}, y_{2}, …, y_{n}) \in\mathbb{R}^n $$</p>
+<p>这两个点的之间的闵氏距离为:</p>
+<p>$$D(X,Y) = \left(\sum_{i=1}^n|x_i-y_i|^{p}\right)^{\frac{1}{p}}$$</p>
+<p>当$p = 1$时, 即为曼哈顿距离(Manhattan distance):</p>
+<p>$$D(X,Y) = \sum_{i=1}^n|x_i-y_i|$$</p>
+<p>当$p = 2$时，即为欧几里得距离(Euclidean distance):</p>
+<p>$$D(X,Y) = \sqrt[2]{\sum_{i=1}^n|x_i-y_i|^{2}}$$</p>
+<p>之后的例子中我们采用$p = 2$来计算距离。</p>
+<h4 id="sk-learn中knn最近距离算法"><a class="header-anchor" href="#sk-learn中knn最近距离算法"></a>sk-learn中knn最近距离算法</h4>
+<ul>
+<li>brute: 暴力计算, 对于D维度下的N个数据，其复杂度高达$O(DN^2)$</li>
+<li>kd_tree: kd树, 是一颗二叉树，它根据切分轴中值切分构造树，其本质就是，如果A点离B点很远，B点离C点很近，那么A点离C点也很远，其复杂度可以降低到$O(DNlogN)$。但是当$D &gt;= 20$后，kd树效率将变低。这里有一篇文章讲解的很清楚(<a href="https://www.joinquant.com/post/2843?f=zh" target="_blank" rel="noopener">传送门</a>)</li>
+<li>ball_tree: 为了解决 KD 树在高维上效率低下的问题</li>
+</ul>
+<p>关于算法时间复杂度以及如何根据k和选择的说明，sklearn官网有更多介绍(<a href="http://scikit-learn.org/stable/modules/neighbors.html#neighbors" target="_blank" rel="noopener">传送门</a>)</p>
+<h4 id="numpy-v2"><a class="header-anchor" href="#numpy-v2"></a>numpy</h4>
+<p>numpy的主要对象ndarray, 是一个同类型元素的多维数组(homogeneous multidimensional array)。在numpy中, dimensions(维度)也称为axes(轴)。</p>
+<ul>
+<li>
+<p>举个栗子:</p>
+<p>[1,2]这个数组只有一个axis，这个axis有两个元素，所以我们说这个axis长度为2.</p>
+</li>
+<li>
+<p>再举个栗子:</p>
+<p>[[1,2,3],[4,5,6]]这个数组，它有两个axes，第一个axis的长度为2，第二个axis的长度为3，我们可以理解其为一个2 * 3的数组。</p>
+</li>
+</ul>
+<p>接着上面的说，ndarray还有一个重要的属性也就是shape, 是一个表明数组在各个dimension上长度的元组。比如上面两个栗子中，其shape分别为(2,)和(3,2)</p>
+<h3 id="knn分类"><a class="header-anchor" href="#knn分类"></a>knn分类</h3>
+<p>下面用iris数据集<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>来模拟一次knn分类。虽然iris数据集其实是一个shape(150,4)的数据集，但是我们为了方便直接阉割到shape(150,2), 此外每个点的权重也分为了两种（同权重或距离权重)。代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> matplotlib.colors <span class="keyword">import</span> ListedColormap</span><br><span class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> neighbors, datasets</span><br><span class="line"></span><br><span class="line">n_neighbors = <span class="number">15</span> <span class="comment"># k为15</span></span><br><span class="line"></span><br><span class="line">iris = datasets.load_iris() <span class="comment"># iris数据集 shape(150,4)</span></span><br><span class="line"></span><br><span class="line">X = iris.data[:, :<span class="number">2</span>] <span class="comment"># 修改为shape(150, 2), 方便在2维图像上展示撒</span></span><br><span class="line">y = iris.target <span class="comment"># iris数据集的分类, 分为3类</span></span><br><span class="line"></span><br><span class="line">h = <span class="number">.02</span>  <span class="comment"># 下面预测用的二维网格坐标点间隔</span></span><br><span class="line"></span><br><span class="line">cmap_light = ListedColormap([<span class="string">'#FFAAAA'</span>, <span class="string">'#AAFFAA'</span>, <span class="string">'#AAAAFF'</span>]) <span class="comment"># 预测点三个分类颜色</span></span><br><span class="line">cmap_bold = ListedColormap([<span class="string">'#FF0000'</span>, <span class="string">'#00FF00'</span>, <span class="string">'#0000FF'</span>]) <span class="comment"># 训练集三个分类颜色（纯深色)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i, weights <span class="keyword">in</span> enumerate([<span class="string">'uniform'</span>, <span class="string">'distance'</span>]): <span class="comment"># 统一权重或者按距离的倒数作为权重</span></span><br><span class="line"></span><br><span class="line">    clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights)</span><br><span class="line">    clf.fit(X, y) <span class="comment"># 拟合</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 准备边界[x_min, x_max] * [y_min, y_max]的方形</span></span><br><span class="line">    x_min, x_max = X[:, <span class="number">0</span>].min() - <span class="number">1</span>, X[:, <span class="number">0</span>].max() + <span class="number">1</span></span><br><span class="line">    y_min, y_max = X[:, <span class="number">1</span>].min() - <span class="number">1</span>, X[:, <span class="number">1</span>].max() + <span class="number">1</span></span><br><span class="line">    xx, yy = np.meshgrid(np.arange(x_min, x_max, h),</span><br><span class="line">                         np.arange(y_min, y_max, h)) <span class="comment"># 生成对应2维数据网格坐标, h为每个点x,y轴的间隔</span></span><br><span class="line"></span><br><span class="line">    Z = clf.predict(np.c_[xx.ravel(), yy.ravel()]) <span class="comment"># c_ 等同于 np.r_['-1,2,0', index expression]</span></span><br><span class="line">    Z = Z.reshape(xx.shape) <span class="comment"># reshape到meshgrid生成的网格的shape</span></span><br><span class="line">    plt.subplot(<span class="number">2</span>, <span class="number">1</span>, i + <span class="number">1</span>)</span><br><span class="line">    plt.pcolormesh(xx, yy, Z, cmap=cmap_light) <span class="comment"># 平面区域预测颜色</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Plot also the training points</span></span><br><span class="line">    plt.scatter(X[:, <span class="number">0</span>], X[:, <span class="number">1</span>], c=y, cmap=cmap_bold,</span><br><span class="line">                edgecolor=<span class="string">'k'</span>, s=<span class="number">20</span>) <span class="comment"># 训练集点的集合</span></span><br><span class="line">    plt.xlim(xx.min(), xx.max()) <span class="comment"># 设置x，y轴边缘</span></span><br><span class="line">    plt.ylim(yy.min(), yy.max())</span><br><span class="line">    plt.title(<span class="string">"3-Class classification (k = %i, weights = '%s')"</span></span><br><span class="line">              % (n_neighbors, weights))</span><br><span class="line"></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p>结果如下图所示:</p>
+<img src="/2018/04/05/机器学习-KNN/knn-classfication.png">
+<p>从结果我们其实可以看出来，uniform和distance两种模式得到的区域结果是有差异的，显然是由于邻近点点权重不同引起的。</p>
+<h3 id="knn回归"><a class="header-anchor" href="#knn回归"></a>knn回归</h3>
+<p>当数据集是连续的情况下，我们也可以利用knn来做regression。下面是一个用knn回归来做正弦函数预测的例子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> neighbors</span><br><span class="line"></span><br><span class="line">np.random.seed(<span class="number">0</span>) <span class="comment">#设置个种子</span></span><br><span class="line">X = np.sort(<span class="number">5</span> * np.random.rand(<span class="number">50</span>, <span class="number">1</span>), axis=<span class="number">0</span>) <span class="comment"># 测试集, 生成shape(50, 1)的2d array, 然后放大5倍排序第一个数轴</span></span><br><span class="line"></span><br><span class="line">T = np.linspace(<span class="number">0</span>, <span class="number">5</span>, <span class="number">500</span>)[:, np.newaxis] <span class="comment"># 预测集, 0到5中等距离取500个值, 然后添加新维度变成shape(500, 1)</span></span><br><span class="line"></span><br><span class="line">y = np.sin(X).ravel() <span class="comment"># 为x中的值取sin值，然后降维</span></span><br><span class="line"></span><br><span class="line">yT = np.sin(T).ravel() <span class="comment"># 预测集应该的真实值</span></span><br><span class="line"></span><br><span class="line">n_neighbors = <span class="number">5</span> <span class="comment"># k为5</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i, weights <span class="keyword">in</span> enumerate([<span class="string">'uniform'</span>, <span class="string">'distance'</span>]): <span class="comment"># distance的情况下, 距离会有权重效应</span></span><br><span class="line">    knn = neighbors.KNeighborsRegressor(n_neighbors, weights)</span><br><span class="line">    y_ = knn.fit(X, y).predict(T)</span><br><span class="line">    plt.subplot(<span class="number">2</span>, <span class="number">1</span>, i + <span class="number">1</span>) <span class="comment"># 画个子plot</span></span><br><span class="line">    plt.scatter(X, y, c=<span class="string">'k'</span>, label=<span class="string">'data'</span>, marker=<span class="string">"."</span>) <span class="comment"># 测试集, 黑色点</span></span><br><span class="line">    plt.plot(T, y_, c=<span class="string">'g'</span>, label=<span class="string">'prediction'</span>) <span class="comment"># 绿色预测线条</span></span><br><span class="line">    plt.plot(T, yT, c=<span class="string">'y'</span>, label=<span class="string">'real'</span>) <span class="comment"># 真实值应该的线条</span></span><br><span class="line">    plt.axis(<span class="string">'tight'</span>)</span><br><span class="line">    plt.legend()</span><br><span class="line">    plt.title(<span class="string">"KNeighborsRegressor (k = %i, weights = '%s')"</span> % (n_neighbors,</span><br><span class="line">                                                                weights))</span><br><span class="line"></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p>结果如下图：</p>
+<img src="/2018/04/05/机器学习-KNN/knn-regression.png">
+<p>从结果图中可以看出，采用distance作为权重的预测值，更为平滑，也更为贴近实际值。</p>
+<h2 id="总结"><a class="header-anchor" href="#总结"></a>总结</h2>
+<p>由于有了三方包，其实代码都很简短，但是每个api都要自己去看一大段解释。另外深深感觉到了python操作数组的方便，并且numpy封装后，由于python允许运算符重载，更是感觉要玩出花了。所以准备开一帖记录下numpy中一些函数概念，以便查阅。</p>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>Iris数据集是常用的分类实验数据集，由Fisher, 1936收集整理。Iris也称鸢尾花卉数据集，是一类多重变量分析的数据集。数据集包含150个数据集，分为3类，每类50个数据，每个数据包含4个属性。可通过花萼长度，花萼宽度，花瓣长度，花瓣宽度4个属性预测鸢尾花卉属于（Setosa，Versicolour，Virginica）三个种类中的哪一类。 <a href="#fnref1" class="footnote-backref">↩</a></p>
+</li>
+</ol>
+</section>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/机器学习/" rel="tag"># 机器学习</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/07/vue-mvvm/" rel="next" title="vue源代码学习-mvvm">
+                <i class="fa fa-chevron-left"></i> vue源代码学习-mvvm
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/04/12/numpy-learn/" rel="prev" title="numpy-学习记录">
+                numpy-学习记录 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+  
+  <div id="container" class = "post-block"></div>
+
+
+<script src="/lib/gitment/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  link: 'https://github.com/FatShen3/Blog/issues',
+  id: '机器学习-KNN', // 可选。默认为 location.href, 这个会用作label，目前最长50个字符
+  owner: 'FatShen3',
+  repo: 'Blog',
+  oauth: {
+    client_id: 'df4cf8f5ace90705ef47',
+    client_secret: 'f3a7368660650339761f5b7b9b2a6040a7828490',
+  },
+})
+gitment.render('container')
+</script>
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars0.githubusercontent.com/u/25524169?s=460&v=4"
+                alt="Fat Shen" />
+            
+              <p class="site-author-name" itemprop="name">Fat Shen</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/FatShen3" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装环境"><span class="nav-number">1.</span> <span class="nav-text">安装环境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#python"><span class="nav-number">1.1.</span> <span class="nav-text">python</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sklearn"><span class="nav-number">1.2.</span> <span class="nav-text">sklearn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#numpy"><span class="nav-number">1.3.</span> <span class="nav-text">numpy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#matplotlib"><span class="nav-number">1.4.</span> <span class="nav-text">matplotlib</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#debug"><span class="nav-number">1.5.</span> <span class="nav-text">debug</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始hello-world"><span class="nav-number">2.</span> <span class="nav-text">开始Hello World</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一些概念"><span class="nav-number">2.1.</span> <span class="nav-text">一些概念</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#闵可夫斯基度量-minkowski-metric"><span class="nav-number">2.1.1.</span> <span class="nav-text">闵可夫斯基度量(Minkowski metric)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sk-learn中knn最近距离算法"><span class="nav-number">2.1.2.</span> <span class="nav-text">sk-learn中knn最近距离算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#numpy-v2"><span class="nav-number">2.1.3.</span> <span class="nav-text">numpy</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#knn分类"><span class="nav-number">2.2.</span> <span class="nav-text">knn分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#knn回归"><span class="nav-number">2.3.</span> <span class="nav-text">knn回归</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fat Shen</span>
+
+  
+</div>
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("2A6ElsKPeJw5b0mJv0kibH2p-gzGzoHsz", "nzFgQKhNwFT6c4CIityIE74C");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+  
+
+  
+
+</body>
+</html>

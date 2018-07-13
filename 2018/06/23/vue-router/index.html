@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-cn">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="vue," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Vue router是Vue官方的路由管理器，帮助用户构建单页面应用。作为Vue生态系统的重要组成成员，还是值得了解一下的，下面就来看看它的内部实现吧。">
+<meta name="keywords" content="vue">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vue源代码学习-vue-router">
+<meta property="og:url" content="http://fatshen3.cn/2018/06/23/vue-router/index.html">
+<meta property="og:site_name" content="FatShen&#39;s Blog">
+<meta property="og:description" content="Vue router是Vue官方的路由管理器，帮助用户构建单页面应用。作为Vue生态系统的重要组成成员，还是值得了解一下的，下面就来看看它的内部实现吧。">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="http://fatshen3.cn/2018/06/23/vue-router/1.png">
+<meta property="og:updated_time" content="2018-07-12T09:26:33.995Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="vue源代码学习-vue-router">
+<meta name="twitter:description" content="Vue router是Vue官方的路由管理器，帮助用户构建单页面应用。作为Vue生态系统的重要组成成员，还是值得了解一下的，下面就来看看它的内部实现吧。">
+<meta name="twitter:image" content="http://fatshen3.cn/2018/06/23/vue-router/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'B7WL0CZLJX',
+      apiKey: 'd54d7b943d8fdc2d08a862405d2985e7',
+      indexName: 'HEXO_ALGOLIA_INDEXING_KEY',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://fatshen3.cn/2018/06/23/vue-router/"/>
+
+
+
+
+
+  <title>vue源代码学习-vue-router | FatShen's Blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-cn">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">FatShen's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://fatshen3.cn/2018/06/23/vue-router/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Fat Shen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars0.githubusercontent.com/u/25524169?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="FatShen's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">vue源代码学习-vue-router</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-23T11:18:46+08:00">
+                2018-06-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/前端/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+          
+          
+             <span id="/2018/06/23/vue-router/" class="leancloud_visitors" data-flag-title="vue源代码学习-vue-router">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Vue router是Vue官方的路由管理器，帮助用户构建单页面应用。作为Vue生态系统的重要组成成员，还是值得了解一下的，下面就来看看它的内部实现吧。</p>
+<a id="more"></a>
+<h2 id="准备工作"><a class="header-anchor" href="#准备工作"></a>准备工作</h2>
+<p>当然是clone一份源代码到本地来了, 我们在这里选用2.7版本:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> --branch v2.7.0 https://github.com/vuejs/vue-router.git</span><br><span class="line"><span class="built_in">cd</span> vue-router</span><br><span class="line">npm i</span><br></pre></td></tr></table></figure>
+<p>vue-router的example目录已经配置好了调试源代码所需的一切，我们直接执行<code>npm run dev</code>来开始吧！</p>
+<h2 id="单页面应用"><a class="header-anchor" href="#单页面应用"></a>单页面应用</h2>
+<p>构建单页面应用的框架需要做些什么呢？自己曾经也写过单页面框架，简单总结可以如下:</p>
+<ol>
+<li>加载路由数据(包括路由名称, 页面资源对应的html、js等)</li>
+<li>页面切换(移除旧页面，加载新页面，过度动画)</li>
+<li>页面切换中的全生命周期的管理(各种钩子)</li>
+</ol>
+<p>当然,vue-router提供了远不止以上所提到的东东。</p>
+<h2 id="插件"><a class="header-anchor" href="#插件"></a>插件</h2>
+<p>vue-router是一个vue插件，所以我们肯定要看看<code>VueRouter.install</code>做了什么, 源代码在src/install.js中, 主要部分如下:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">Vue.mixin(&#123; <span class="comment">// 全局mixin</span></span><br><span class="line">    beforeCreate () &#123;</span><br><span class="line">      <span class="keyword">if</span> (isDef(<span class="keyword">this</span>.$options.router)) &#123; <span class="comment">// 有router, 则是根节点</span></span><br><span class="line">        <span class="keyword">this</span>._routerRoot = <span class="keyword">this</span> <span class="comment">// 根节点vue对象</span></span><br><span class="line">        <span class="keyword">this</span>._router = <span class="keyword">this</span>.$options.router</span><br><span class="line">        <span class="keyword">this</span>._router.init(<span class="keyword">this</span>) <span class="comment">// 初始化router, 展示第一个页面</span></span><br><span class="line">        <span class="comment">// 在router-view、router-link render时，其dep加入render watcher, 形成依赖关系</span></span><br><span class="line">        <span class="comment">// 换句话说，改变根节点的_route指向新的route, 将引发重新render</span></span><br><span class="line">        Vue.util.defineReactive(<span class="keyword">this</span>, <span class="string">'_route'</span>, <span class="keyword">this</span>._router.history.current)         </span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">this</span>._routerRoot = (<span class="keyword">this</span>.$parent &amp;&amp; <span class="keyword">this</span>.$parent._routerRoot) || <span class="keyword">this</span></span><br><span class="line">      &#125;</span><br><span class="line">      registerInstance(<span class="keyword">this</span>, <span class="keyword">this</span>) <span class="comment">// matched添加vue instance</span></span><br><span class="line">    &#125;,</span><br><span class="line">    destroyed () &#123;</span><br><span class="line">      registerInstance(<span class="keyword">this</span>) </span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="built_in">Object</span>.defineProperty(Vue.prototype, <span class="string">'$router'</span>, &#123; <span class="comment">// 所有vue对象都可以访问到$router</span></span><br><span class="line">    get () &#123; <span class="keyword">return</span> <span class="keyword">this</span>._routerRoot._router &#125;</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="built_in">Object</span>.defineProperty(Vue.prototype, <span class="string">'$route'</span>, &#123; <span class="comment">// 所有vue对象都可以访问到当前$route</span></span><br><span class="line">    get () &#123; <span class="keyword">return</span> <span class="keyword">this</span>._routerRoot._route &#125;</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  Vue.component(<span class="string">'router-view'</span>, View) <span class="comment">// vue-router提供的两个组件</span></span><br><span class="line">  Vue.component(<span class="string">'router-link'</span>, Link)</span><br></pre></td></tr></table></figure>
+<p>install中主要做了下面这些事:</p>
+<ol>
+<li>初始化router</li>
+<li>定义响应式属性<code>_route</code></li>
+<li>为vue实例定义<code>$router</code>、<code>$route</code>等访问属性</li>
+<li>定义<code>router-view</code>, <code>router-link</code>两个组件</li>
+</ol>
+<p>注意<code>$route</code>实际访问的也是根实例的<code>_route</code>，所以在<code>router-view</code>, <code>router-link</code>两个组件的render函数中出现了对<code>$route</code>的访问，会触发依赖收集。所以，<code>vue-router</code>在完全一次路由导航后，会更新<code>_route</code>属性，以此触发视图更新。</p>
+<h2 id="路由模式"><a class="header-anchor" href="#路由模式"></a>路由模式</h2>
+<p>Vue-router提供了三种模式：abstract、hash、html5。在实现上，它们分别继承自History类，可以用下副图表示：</p>
+<img src="/2018/06/23/vue-router/1.png">
+<ol>
+<li>History</li>
+</ol>
+<p>作为基类，跳转页面的主要逻辑处理在这个类完成。由于不同模式对URL的处理，以及支持的功能不尽相同，History暴露了一些方法由子类来实现。</p>
+<ol start="2">
+<li>HashHistory</li>
+</ol>
+<p><code>hash</code>模式，URL里会带一个#号，这种模式能支持你直接在URL里直接输入页面地址而不会重新加载。Hash模式的replace通过<code>location.replace</code>方法来实现, 这样也可以实现替换浏览器的历史记录。</p>
+<ol start="3">
+<li>HTML5History</li>
+</ol>
+<p><code>history</code>模式，利用H5的pushState、replaceState来改变URL，同时改变浏览器的历史记录。URL直观来看就是会少一个<code>#</code>。H5模式特殊之处是提供了页面滚动行为的支持，当发生popstate事件时，可以让应用自由的根据之前访问的滚动位置来重新决定滚动行为。虽然我也不是很明白为什么只在H5模式提供滚动支持…</p>
+<ol start="4">
+<li>AbstractHistory</li>
+</ol>
+<p><code>abstract</code>模式，是用于非browser环境的，或者也可以用于nested router的场景。这种模式不会呈现路由对应的URL，也根本不会用到window.history对象，其内部自己维护了一个stack来储存访问的路由页面。</p>
+<h2 id="路由匹配"><a class="header-anchor" href="#路由匹配"></a>路由匹配</h2>
+<p><code>vue-router</code>使用<a href="https://github.com/pillarjs/path-to-regexp" target="_blank" rel="noopener">path-to-regexp</a>来支持动态路由匹配。比如默认情况下:</p>
+<ul>
+<li>path: <code>/parent</code>会转为正则<code>/^\/parent(?:\/(?=$))?$/i</code></li>
+<li>path: <code>/parent/qux/:quxId</code>会转为正则<code>/^\/parent\/qux\/((?:[^\/]+?))(?:\/(?=$))?$/i</code></li>
+</ul>
+<p>所以，当URL改变时，会将所有的路由拿出来依次匹配得出所有匹配的结果<code>matched</code>数组。有时候，同一个路径可以匹配多个路由，此时，匹配的优先级就按照路由的定义顺序：谁先定义的，谁的优先级就最高; 当然，如果有<code>router-view</code>嵌套的情况，会根据深度来访问匹配的路由<code>matched</code>。</p>
+<h2 id="内置组件"><a class="header-anchor" href="#内置组件"></a>内置组件</h2>
+<p><code>Vue-router</code>提供了两个组件</p>
+<h3 id="router-link"><a class="header-anchor" href="#router-link"></a>router-link</h3>
+<p><code>router-link</code>支持用户在具有路由功能的应用中实现导航。具体代码可以看src/components/link.js。<code>router-link</code>可以让应用只关注相对路径，并且针对h5 history模式会自动阻止页面重加载。</p>
+<h3 id="router-view"><a class="header-anchor" href="#router-view"></a>router-view</h3>
+<p><code>router-view</code>用来渲染匹配的路由视图组件，它还可以嵌套自身，根据匹配的深度来渲染match的路由。<code>router-view</code>源代码如下(已添加注释)：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  name: <span class="string">'router-view'</span>,</span><br><span class="line">  functional: <span class="literal">true</span>,</span><br><span class="line">  props: &#123;</span><br><span class="line">    name: &#123;</span><br><span class="line">      type: <span class="built_in">String</span>,</span><br><span class="line">      <span class="keyword">default</span>: <span class="string">'default'</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  render (_, &#123; props, children, parent, data &#125;) &#123; <span class="comment">// 函数式组件没有this, 所以把需要的参数直接显示的写出来</span></span><br><span class="line">    data.routerView = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// directly use parent context's createElement() function</span></span><br><span class="line">    <span class="comment">// so that components rendered by router-view can resolve named slots</span></span><br><span class="line">    <span class="keyword">const</span> h = parent.$createElement</span><br><span class="line">    <span class="keyword">const</span> name = props.name</span><br><span class="line">    <span class="keyword">const</span> route = parent.$route <span class="comment">// 触发依赖收集</span></span><br><span class="line">    <span class="keyword">const</span> cache = parent._routerViewCache || (parent._routerViewCache = &#123;&#125;)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// determine current view depth, also check to see if the tree</span></span><br><span class="line">    <span class="comment">// has been toggled inactive but kept-alive.</span></span><br><span class="line">    <span class="keyword">let</span> depth = <span class="number">0</span></span><br><span class="line">    <span class="keyword">let</span> inactive = <span class="literal">false</span></span><br><span class="line">    <span class="keyword">while</span> (parent &amp;&amp; parent._routerRoot !== parent) &#123; <span class="comment">// 判断_routerRoot是因为可能有嵌套的router(看例子nested-router)</span></span><br><span class="line">      <span class="keyword">if</span> (parent.$vnode &amp;&amp; parent.$vnode.data.routerView) &#123;</span><br><span class="line">        depth++</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (parent._inactive) &#123;</span><br><span class="line">        inactive = <span class="literal">true</span></span><br><span class="line">      &#125;</span><br><span class="line">      parent = parent.$parent</span><br><span class="line">    &#125;</span><br><span class="line">    data.routerViewDepth = depth</span><br><span class="line"></span><br><span class="line">    <span class="comment">// render previous view if the tree is inactive and kept-alive</span></span><br><span class="line">    <span class="keyword">if</span> (inactive) &#123; <span class="comment">// 包裹于keep-alive的情况</span></span><br><span class="line">      <span class="keyword">return</span> h(cache[name], data, children)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> matched = route.matched[depth] <span class="comment">// 根据深度来获取匹配的路由</span></span><br><span class="line">    <span class="comment">// render empty node if no matched route</span></span><br><span class="line">    <span class="keyword">if</span> (!matched) &#123; <span class="comment">// 没有匹配的返回空节点</span></span><br><span class="line">      cache[name] = <span class="literal">null</span></span><br><span class="line">      <span class="keyword">return</span> h()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> component = cache[name] = matched.components[name]</span><br><span class="line"></span><br><span class="line">    <span class="comment">// attach instance registration hook</span></span><br><span class="line">    <span class="comment">// this will be called in the instance's injected lifecycle hooks</span></span><br><span class="line">    data.registerRouteInstance = <span class="function">(<span class="params">vm, val</span>) =&gt;</span> &#123; <span class="comment">// 对应src/install里全局mixin，在beforeCreate和destroy时调用</span></span><br><span class="line">      <span class="comment">// val could be undefined for unregistration</span></span><br><span class="line">      <span class="keyword">const</span> current = matched.instances[name]</span><br><span class="line">      <span class="keyword">if</span> (</span><br><span class="line">        (val &amp;&amp; current !== vm) || <span class="comment">// beforecreate时, 若router-view不一致</span></span><br><span class="line">        (!val &amp;&amp; current === vm) <span class="comment">// destroy时, 若router-view一致</span></span><br><span class="line">      ) &#123;</span><br><span class="line">        matched.instances[name] = val <span class="comment">// 更新</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// also regiseter instance in prepatch hook</span></span><br><span class="line">    <span class="comment">// in case the same component instance is reused across different routes</span></span><br><span class="line">    ;<span class="function">(<span class="params">data.hook || (data.hook = &#123;&#125;</span>)).<span class="params">prepatch</span> = (<span class="params">_, vnode</span>) =&gt;</span> &#123; <span class="comment">// 在创建component的时候，vue会自动添加prepatch钩子，所以这个钩子会被覆盖啊，不理解了</span></span><br><span class="line">      matched.instances[name] = vnode.componentInstance</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// resolve props</span></span><br><span class="line">    data.props = resolveProps(route, matched.props &amp;&amp; matched.props[name]) <span class="comment">// 利用props来解耦</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> h(component, data, children) <span class="comment">// 返回vnode节点</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>router-view</code>主要做了以下一些功能支持：</p>
+<ol>
+<li>通过_routerRoot字段(src/install.js), 支持nested router</li>
+<li>通过_inactive字段(定义于vue中), 支持了keep-alive</li>
+<li>嵌套路由(nested route)会匹配多个路由，通过depth来决定当前<code>router-view</code>渲染哪个路由</li>
+<li>支持了利用props来解耦，不必在<code>router-view</code>子组件里使用<code>$route.params.fieldName</code>来获取传参数据</li>
+</ol>
+<h2 id="路由的导航流程"><a class="header-anchor" href="#路由的导航流程"></a>路由的导航流程</h2>
+<p>下面我们跟着源码来一步一步解析导航的整个流程：</p>
+<ol>
+<li>调用<code>router.push(location)</code>(当然也可能是别的方式)， 触发路由导航</li>
+<li>获取匹配的路由<code>route</code></li>
+<li>根据当前匹配路由current.matched, 新匹配路由route.matched，获得如下三个数组:</li>
+</ol>
+<ul>
+<li>deactivated 要移除的视图组件</li>
+<li>updated 要更新的视图组件</li>
+<li>actived 要新增的视图组件</li>
+</ul>
+<p>$注意，这些数组并不一定都有值$</p>
+<ol start="4">
+<li>将一系列钩子放入数组，等待顺序执行:</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> queue: <span class="built_in">Array</span>&lt;?NavigationGuard&gt; = [].concat( <span class="comment">// route更新周期的各个钩子，按照顺序排排坐</span></span><br><span class="line">      <span class="comment">// in-component leave guards</span></span><br><span class="line">      extractLeaveGuards(deactivated), <span class="comment">// 页面组件的beforeRouteLeave</span></span><br><span class="line">      <span class="comment">// global before hooks</span></span><br><span class="line">      <span class="keyword">this</span>.router.beforeHooks, <span class="comment">// router的全局beforeEach</span></span><br><span class="line">      <span class="comment">// in-component update hooks</span></span><br><span class="line">      extractUpdateHooks(updated), <span class="comment">// 页面组件的beforeRouteUpdate</span></span><br><span class="line">      <span class="comment">// in-config enter guards</span></span><br><span class="line">      activated.map(<span class="function"><span class="params">m</span> =&gt;</span> m.beforeEnter), <span class="comment">// 路由本身的beforeEnter钩子</span></span><br><span class="line">      <span class="comment">// async components</span></span><br><span class="line">      resolveAsyncComponents(activated) <span class="comment">// 万一activated里有异步组件, 则需要获取成功再next</span></span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>执行完上述queue之后(假设都成功)，将开始准备执行激活组件的beforeRouteEnter, 全局的beforeResolve钩子:</li>
+</ol>
+<ul>
+<li>针对执行beforeRouteEnter钩子，本来在此时，新的视图组件还并没有生成，所以不能通过this直接获取组件实例。但是<code>Vue-router</code>提供了通过函数来获取的方式如：</li>
+</ul>
+  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">beforeRouteEnter (to, <span class="keyword">from</span>, next) &#123;</span><br><span class="line">  next(<span class="function"><span class="params">vm</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 通过 `vm` 访问组件实例</span></span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>
+<p><code>Vue-router</code>又是如何获取到实例的呢? 记得我们在查看<code>router-view</code>的代码和<code>install.js</code>代码时，<code>vue-router</code>通过<code>beforeCreate</code>钩子为匹配的路由定义了<code>route.instances</code>数组，这个数组就用到储存对应的命名视图的组件实例。所以<code>Vue-router</code>在<code>Vue.$nextTick</code>中，再执行用户定义的函数，这样就可以获取到组件实例<code>vm</code>了。</p>
+</li>
+<li>
+<p>除此之外，这里还有一个有意思的地方。还记得之前提到<code>transition</code>的<code>out-in</code>模式吧，这种模式会先将旧组件彻底移除后（动画结束），再采用<code>$forceUpdate</code>的方式加入新的组件。这样带来一个问题就是，在第一次的<code>$nextTick</code>中<code>vue-router</code>还是无法为用户提供<code>vm</code>实例，所以<code>vue-router</code>这里粗暴的采用了循环检测的方式，等<code>route.instances</code>数组中有了对应的实例值后，再调用用户的钩子函数提供<code>vm</code>。</p>
+</li>
+</ul>
+<ol start="6">
+<li>以上都成功后(注意beforeRouteEnter若用户传入函数，则不影响导航的确认), 导航就被确认。</li>
+<li>更新路由, 修改路由所属<code>vue根实例</code>的<code>_route</code>值，准备触发DOM视图更新(无论是micro task或macro task，异步更新)</li>
+<li>在DOM视图更新前，触发<code>afterEach</code>钩子</li>
+<li>DOM视图更新</li>
+<li>用创建好的实例传给<code>beforeRouteEnter</code>钩子中<code>next</code>的回调函数(第5步中)</li>
+</ol>
+<h2 id="总结"><a class="header-anchor" href="#总结"></a>总结</h2>
+<p>在看源码的时候，等于是又复习了一下hash和h5 history的知识，也明白了<code>vue-router</code>的原理。清楚了整个导航流程，以后使用中碰到问题也能结合起来快速定位了。最后，附上添加了注释的源代码，水平有限难免理解有误。</p>
+<p><a href="/Blog/download/vue-router-src.zip">点击下载</a></p>
+<p>Over~</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/vue/" rel="tag"># vue</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/29/javascript-float/" rel="next" title="javascript的精度问题">
+                <i class="fa fa-chevron-left"></i> javascript的精度问题
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/12/vuex/" rel="prev" title="vue源代码学习-vuex">
+                vue源代码学习-vuex <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+  
+  <div id="container" class = "post-block"></div>
+
+
+<script src="/lib/gitment/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  link: 'https://github.com/FatShen3/Blog/issues',
+  id: 'vue源代码学习-vue-router', // 可选。默认为 location.href, 这个会用作label，目前最长50个字符
+  owner: 'FatShen3',
+  repo: 'Blog',
+  oauth: {
+    client_id: 'df4cf8f5ace90705ef47',
+    client_secret: 'f3a7368660650339761f5b7b9b2a6040a7828490',
+  },
+})
+gitment.render('container')
+</script>
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars0.githubusercontent.com/u/25524169?s=460&v=4"
+                alt="Fat Shen" />
+            
+              <p class="site-author-name" itemprop="name">Fat Shen</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/FatShen3" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#准备工作"><span class="nav-number">1.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#单页面应用"><span class="nav-number">2.</span> <span class="nav-text">单页面应用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#插件"><span class="nav-number">3.</span> <span class="nav-text">插件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#路由模式"><span class="nav-number">4.</span> <span class="nav-text">路由模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#路由匹配"><span class="nav-number">5.</span> <span class="nav-text">路由匹配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内置组件"><span class="nav-number">6.</span> <span class="nav-text">内置组件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#router-link"><span class="nav-number">6.1.</span> <span class="nav-text">router-link</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#router-view"><span class="nav-number">6.2.</span> <span class="nav-text">router-view</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#路由的导航流程"><span class="nav-number">7.</span> <span class="nav-text">路由的导航流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fat Shen</span>
+
+  
+</div>
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("2A6ElsKPeJw5b0mJv0kibH2p-gzGzoHsz", "nzFgQKhNwFT6c4CIityIE74C");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+  
+  
+
+  
+  
+
+  
+
+</body>
+</html>

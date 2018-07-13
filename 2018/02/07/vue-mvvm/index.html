@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-cn">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="vue,mvvm," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Vue作为一个用于构建界面的框架，首要学习的当然是它的mvvm模块。结合Vue对象的生命周期，简单画个图说明mvvm的主要步骤分别是在哪个位置发生的">
+<meta name="keywords" content="vue,mvvm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vue源代码学习-mvvm">
+<meta property="og:url" content="http://fatshen3.cn/2018/02/07/vue-mvvm/index.html">
+<meta property="og:site_name" content="FatShen&#39;s Blog">
+<meta property="og:description" content="Vue作为一个用于构建界面的框架，首要学习的当然是它的mvvm模块。结合Vue对象的生命周期，简单画个图说明mvvm的主要步骤分别是在哪个位置发生的">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="http://fatshen3.cn/2018/02/07/vue-mvvm/mvvm1.png">
+<meta property="og:image" content="http://fatshen3.cn/2018/02/07/vue-mvvm/mvvm2.png">
+<meta property="og:image" content="http://fatshen3.cn/2018/02/07/vue-mvvm/mvvm3.png">
+<meta property="og:image" content="http://fatshen3.cn/2018/02/07/vue-mvvm/mvvm4.png">
+<meta property="og:image" content="http://fatshen3.cn/2018/02/07/vue-mvvm/mvvm5.png">
+<meta property="og:image" content="http://fatshen3.cn/2018/02/07/vue-mvvm/mvvm6.png">
+<meta property="og:image" content="http://fatshen3.cn/2018/02/07/vue-mvvm/mvvm7.png">
+<meta property="og:image" content="http://fatshen3.cn/2018/02/07/vue-mvvm/mvvm8.png">
+<meta property="og:image" content="http://fatshen3.cn/2018/02/07/vue-mvvm/mvvm9.png">
+<meta property="og:image" content="http://fatshen3.cn/2018/02/07/vue-mvvm/mvvm10.png">
+<meta property="og:updated_time" content="2018-07-12T09:26:33.969Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="vue源代码学习-mvvm">
+<meta name="twitter:description" content="Vue作为一个用于构建界面的框架，首要学习的当然是它的mvvm模块。结合Vue对象的生命周期，简单画个图说明mvvm的主要步骤分别是在哪个位置发生的">
+<meta name="twitter:image" content="http://fatshen3.cn/2018/02/07/vue-mvvm/mvvm1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'B7WL0CZLJX',
+      apiKey: 'd54d7b943d8fdc2d08a862405d2985e7',
+      indexName: 'HEXO_ALGOLIA_INDEXING_KEY',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://fatshen3.cn/2018/02/07/vue-mvvm/"/>
+
+
+
+
+
+  <title>vue源代码学习-mvvm | FatShen's Blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-cn">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">FatShen's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://fatshen3.cn/2018/02/07/vue-mvvm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Fat Shen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars0.githubusercontent.com/u/25524169?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="FatShen's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">vue源代码学习-mvvm</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-07T15:19:16+08:00">
+                2018-02-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/前端/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+          
+          
+             <span id="/2018/02/07/vue-mvvm/" class="leancloud_visitors" data-flag-title="vue源代码学习-mvvm">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Vue作为一个用于构建界面的框架，首要学习的当然是它的mvvm模块。结合Vue对象的生命周期，简单画个图说明mvvm的主要步骤分别是在哪个位置发生的</p>
+<img src="/2018/02/07/vue-mvvm/mvvm1.png" title="<span id=pic1>图1. mvvm步骤与vue对象生命周期</a>">
+<a id="more"></a>
+<h2 id="observe-data"><a class="header-anchor" href="#observe-data"></a>observe data</h2>
+<p>observe data的部分基于以下三个对象</p>
+<ol>
+<li>Observer core/observer/index.js<br>
+利用Object.definePropery, 遍历data对象, 针对属性创建getter &amp; setter</li>
+<li>Watcher core/observer/watcher.js<br>
+接受一个表达式或者函数，在执行表达式或者函数的时候, 注册到被访问的属性对应的Dep对象，在dep.notify的时候执行watcher的回调</li>
+<li>Dep core/observer/dep.js<br>
+链接Watcher和Observer之间的桥梁, 每一个被observe的对象、数组、以及它们的基本类型属性值, 都有一个dep实例. dep实例里注册着若干个watcher实例, 一旦setter被调用并且满足条件，则触发这些watcher执行回调</li>
+</ol>
+<p>下面我们逐步来解析<a href="#pic1">图1</a>中observe data这个过程中的内容，如下图所示:</p>
+<img src="/2018/02/07/vue-mvvm/mvvm2.png" title="图2. observe data步骤分解">
+<p>(1) observe(data)</p>
+<p>这一步的主要流程中图上画的很清楚了, 这一步的作用就是为data创建Observer实例(当然也会有一些分支判断比如: data是否已经有Observer实例)</p>
+<p>(2) new Observer(data)</p>
+<ul>
+<li>为这个Observer对象创建dep实例, 根据data类型(对象或者数组), 分别遍历它们的全部值</li>
+</ul>
+<ul>
+<li>若是对象的值则调用defineReactive</li>
+<li>若是数组的值则调用observe</li>
+</ul>
+<p>(3) defineReactive(data, key, value)</p>
+<p>为data创建响应式属性key</p>
+<ul>
+<li>创建dep实例</li>
+<li>observe(value)</li>
+<li>为data[key]创建getter &amp; setter
+<ul>
+<li><span id="code1">getter</span>: 如果当前有watcher正在运行, 则将watcher注册到该属性的dep实例，以及注册到属性对象的Observer对象上(如果是数组则还要循环数组注册watcher)</li>
+</ul>
+</li>
+</ul>
+ <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// core/observer/index.js</span></span><br><span class="line">get: <span class="function"><span class="keyword">function</span> <span class="title">reactiveGetter</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">     <span class="keyword">const</span> value = getter ? getter.call(obj) : val</span><br><span class="line">     <span class="keyword">if</span> (Dep.target) &#123; <span class="comment">// 初始化watcher的时候，通过调用getter访问器来添加依赖(将watcher添加到dep里)</span></span><br><span class="line">       dep.depend()</span><br><span class="line">       <span class="keyword">if</span> (childOb) &#123; <span class="comment">// 如果是对象属性并且成功observe, 同样收集依赖</span></span><br><span class="line">         childOb.dep.depend() </span><br><span class="line">         <span class="keyword">if</span> (<span class="built_in">Array</span>.isArray(value)) &#123; <span class="comment">// 数组</span></span><br><span class="line">           dependArray(value)</span><br><span class="line">         &#125;</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">return</span> value</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>setter: 设置新值, 若值变化, observe(newVal), 并且调用dep.notify()触发dep实例里注册的所有watcher</li>
+</ul>
+ <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// core/observer/index.js</span></span><br><span class="line">set: <span class="function"><span class="keyword">function</span> <span class="title">reactiveSetter</span> (<span class="params">newVal</span>) </span>&#123;</span><br><span class="line">     <span class="keyword">const</span> value = getter ? getter.call(obj) : val</span><br><span class="line">     <span class="comment">/* eslint-disable no-self-compare */</span></span><br><span class="line">     <span class="keyword">if</span> (newVal === value || (newVal !== newVal &amp;&amp; value !== value)) &#123; <span class="comment">// 判断NaN ? Nan === NaN是false</span></span><br><span class="line">       <span class="keyword">return</span></span><br><span class="line">     &#125;</span><br><span class="line">     <span class="comment">/* eslint-enable no-self-compare */</span></span><br><span class="line">     <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span> &amp;&amp; customSetter) &#123;</span><br><span class="line">       customSetter()</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">if</span> (setter) &#123;</span><br><span class="line">       setter.call(obj, newVal)</span><br><span class="line">     &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">       val = newVal</span><br><span class="line">     &#125;</span><br><span class="line">     childOb = !shallow &amp;&amp; observe(newVal) <span class="comment">//如果新值是对象或者array，深度observe</span></span><br><span class="line">     dep.notify() <span class="comment">//调用dep里所有watcher的update方法</span></span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="生成render函数"><a class="header-anchor" href="#生成render函数"></a>生成render函数</h2>
+<p>这一步并不一定是必须的，有可能自定义了render函数，有可能使用如vue-loader等编译时使用的插件提前编译template创建了render函数，最后也可能传入template属性，让vue框架在run-time阶段生成render函数。</p>
+<p>那么什么是render函数？用自己的一句话概括就是: render函数接受参数，生成对应的virtual dom tree的根结点vnode。每一次render函数依赖的变量改变时，vue会生成新的虚拟dom树，并且和旧的虚拟dom树进行diff，然后将变更的结果patch到真实的dom树中去。我们取examples/commits中的例子生成的<span id="code2">render函数</span>如下:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">with</span>(<span class="keyword">this</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> _c(<span class="string">'div'</span>, &#123;</span><br><span class="line">      attrs: &#123;</span><br><span class="line">        <span class="string">"id"</span>: <span class="string">"demo"</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;, [_c(<span class="string">'h1'</span>, [_v(<span class="string">"Latest Vue.js Commits"</span>)]), _v(<span class="string">" "</span>), _l((branches), <span class="function"><span class="keyword">function</span> (<span class="params">branch</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> [_c(<span class="string">'input'</span>, &#123;</span><br><span class="line">        directives: [&#123;</span><br><span class="line">          name: <span class="string">"model"</span>,</span><br><span class="line">          rawName: <span class="string">"v-model"</span>,</span><br><span class="line">          value: (currentBranch),</span><br><span class="line">          expression: <span class="string">"currentBranch"</span></span><br><span class="line">        &#125;],</span><br><span class="line">        attrs: &#123;</span><br><span class="line">          <span class="string">"type"</span>: <span class="string">"radio"</span>,</span><br><span class="line">          <span class="string">"id"</span>: branch,</span><br><span class="line">          <span class="string">"name"</span>: <span class="string">"branch"</span></span><br><span class="line">        &#125;,</span><br><span class="line">        domProps: &#123;</span><br><span class="line">          <span class="string">"value"</span>: branch,</span><br><span class="line">          <span class="string">"checked"</span>: _q(currentBranch, branch)</span><br><span class="line">        &#125;,</span><br><span class="line">        on: &#123;</span><br><span class="line">          <span class="string">"change"</span>: <span class="function"><span class="keyword">function</span> (<span class="params">$event</span>) </span>&#123;</span><br><span class="line">            currentBranch = branch</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;), _v(<span class="string">" "</span>), _c(<span class="string">'label'</span>, &#123;</span><br><span class="line">        attrs: &#123;</span><br><span class="line">          <span class="string">"for"</span>: branch</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;, [_v(_s(branch))])]</span><br><span class="line">    &#125;), _v(<span class="string">" "</span>), _c(<span class="string">'p'</span>, [_v(<span class="string">"vuejs/vue@"</span> + _s(currentBranch))]), _v(<span class="string">" "</span>), _c(<span class="string">'ul'</span>, _l((commits), <span class="function"><span class="keyword">function</span> (<span class="params">record</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> _c(<span class="string">'li'</span>, [_c(<span class="string">'a'</span>, &#123;</span><br><span class="line">        staticClass: <span class="string">"commit"</span>,</span><br><span class="line">        attrs: &#123;</span><br><span class="line">          <span class="string">"href"</span>: record.html_url,</span><br><span class="line">          <span class="string">"target"</span>: <span class="string">"_blank"</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;, [_v(_s(record.sha.slice(<span class="number">0</span>, <span class="number">7</span>)))]), _v(<span class="string">"\n          - "</span>), _c(<span class="string">'span'</span>, &#123;</span><br><span class="line">        staticClass: <span class="string">"message"</span></span><br><span class="line">      &#125;, [_v(_s(_f(<span class="string">"truncate"</span>)(record.commit.message)))]), _c(<span class="string">'br'</span>), _v(<span class="string">"\n          by "</span>), _c(<span class="string">'span'</span>, &#123;</span><br><span class="line">        staticClass: <span class="string">"author"</span></span><br><span class="line">      &#125;, [_c(<span class="string">'a'</span>, &#123;</span><br><span class="line">        attrs: &#123;</span><br><span class="line">          <span class="string">"href"</span>: record.author.html_url,</span><br><span class="line">          <span class="string">"target"</span>: <span class="string">"_blank"</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;, [_v(_s(record.commit.author.name))])]), _v(<span class="string">"\n          at "</span>), _c(<span class="string">'span'</span>, &#123;</span><br><span class="line">        staticClass: <span class="string">"date"</span></span><br><span class="line">      &#125;, [_v(_s(_f(<span class="string">"formatDate"</span>)(record.commit.author.date)))])])</span><br><span class="line">    &#125;))], <span class="number">2</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>上面的render函数中, this就是vm的实例, _c就是createElement的别名， _l就是渲染for list用的等等。具体这些函数定义可以查看core/instance/render-helpers/index.js。从上图代码中其实也不难看出，它返回的最终也是一个VNode节点（虚拟dom树的root节点)，有了这个函数和虚拟树的diff算法，我们就可以通过响应式数据来动态更新视图了。</p>
+<h2 id="new-watcher"><a class="header-anchor" href="#new-watcher"></a>new watcher</h2>
+<p>在obseve data, 并且成功生成render函数后，vue会创建针对render函数的watcher:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// core/instance/lifecycle.js</span></span><br><span class="line">updateComponent = <span class="function"><span class="params">()</span> =&gt;</span> &#123; <span class="comment">// 针对整个vm对象的watcher，里面会调用render方法创建虚拟vnode, 然后_update进行初次渲染(或者比较旧的虚拟树)，顺便收集依赖</span></span><br><span class="line">      vm._update(vm._render(), hydrating)</span><br><span class="line">&#125;</span><br><span class="line">vm._watcher = <span class="keyword">new</span> Watcher(vm, updateComponent, noop) <span class="comment">// 创建watcher</span></span><br></pre></td></tr></table></figure>
+<p>我们一直在强调收集依赖，那么这个依赖到底是怎么收集的呢？其实很简单，在watcher对象里，每一次被new(创建)或者update(依赖的属性值改变，重新收集依赖)时，都会进入watcher的get方法:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// core/observer/watcher.js</span></span><br><span class="line">get () &#123; <span class="comment">// 通过这个方式来收集依赖,触发watcher回调</span></span><br><span class="line">    pushTarget(<span class="keyword">this</span>) <span class="comment">// 当前正在收集依赖的watcher, 储存中Dep的静态属性中 (Dep.target)</span></span><br><span class="line">    <span class="keyword">let</span> value</span><br><span class="line">    <span class="keyword">const</span> vm = <span class="keyword">this</span>.vm</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      value = <span class="keyword">this</span>.getter.call(vm, vm) <span class="comment">//进入getter, 收集依赖</span></span><br><span class="line">    &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.user) &#123;</span><br><span class="line">        handleError(e, vm, <span class="string">`getter for watcher "<span class="subst">$&#123;<span class="keyword">this</span>.expression&#125;</span>"`</span>)</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> e</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      <span class="comment">// "touch" every property so they are all tracked as</span></span><br><span class="line">      <span class="comment">// dependencies for deep watching</span></span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.deep) &#123;</span><br><span class="line">        traverse(value)</span><br><span class="line">      &#125;</span><br><span class="line">      popTarget() <span class="comment">// 收集完毕</span></span><br><span class="line">      <span class="keyword">this</span>.cleanupDeps()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> value</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>如上代码所示, 其实vue只是调用了一下watcher.get方法(比如上面的updateComponent方法, watcher构造函数的第二个参数)，然后get方法里所有定义了getter的属性参数(<a href="#code2">render函数中</a>)，会将当前的watcher注册到对应的dep里(<a href="#code1">代码</a>)。如此一来，当视图依赖值改变时，会再次重新调用render函数，生成新的虚拟树，然后根据diff算法patch到真实的dom树里。</p>
+<h2 id="diff算法"><a class="header-anchor" href="#diff算法"></a>diff算法</h2>
+<p>Vue的虚拟dom树diff, patch算法是基于Snabbdom的。源代码位于core/vdom/patch.js中。普遍来说，一个virtual dom的过程, 可以用以下的伪代码表示:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 当依赖数据值改变后触发</span></span><br><span class="line"><span class="keyword">var</span> newVnode = render(vnode, state)</span><br><span class="line"><span class="keyword">var</span> diffs = diff(oldVnode, newVnode)</span><br><span class="line">patch(diffs)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 与上面不同， Snabbdom中直接将patch和diff合并到了一个过程中</span></span><br><span class="line"><span class="keyword">var</span> newVnode = render(vnode, state)</span><br><span class="line">patch(oldVnode, newVnode)</span><br></pre></td></tr></table></figure>
+<p>其实这里也涉及到了一个两棵树最小差异比较的算法。但是考虑到复杂度，包括react在内的框架都只会将两颗树的同层级进行比较，因为实际应用过程中大部分的情况，也只会在同一个层级里进行节点修改。若父节点不同，那么子节点并不会做任何的比较，这颗子树会被直接替换。如何判断节点是否可复用呢， 当然要判断节点key属性，tag是否一致等，这样vue就可以直接改变节点attr属性, 改变事件绑定等，就不用再重复创建dom耗时:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sameVnode</span> (<span class="params">a, b</span>) </span>&#123; <span class="comment">// 判断vnode是否相同，这样可以不用更新</span></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    a.key === b.key &amp;&amp; ( <span class="comment">// key必须相同(非v-for情况下都是undefined也是相同)</span></span><br><span class="line">      (</span><br><span class="line">        a.tag === b.tag &amp;&amp;</span><br><span class="line">        a.isComment === b.isComment &amp;&amp;</span><br><span class="line">        isDef(a.data) === isDef(b.data) &amp;&amp;</span><br><span class="line">        sameInputType(a, b) <span class="comment">// 毕竟input标签招式多</span></span><br><span class="line">      ) || (</span><br><span class="line">        isTrue(a.isAsyncPlaceholder) &amp;&amp; <span class="comment">// 异步组件</span></span><br><span class="line">        a.asyncFactory === b.asyncFactory &amp;&amp;</span><br><span class="line">        isUndef(b.asyncFactory.error)</span><br><span class="line">      )</span><br><span class="line">    )</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>整个比较过程流程图如下所示</p>
+<img src="/2018/02/07/vue-mvvm/mvvm3.png" title="图3. vdom diff过程">
+<ul>
+<li>如果oldVnode节点是html节点(第一次渲染时)或者不满足sameVnode(oldVnode, newVnode), 那么这种情况下，都应该抛弃oldVnode，直接使用newVnode创建新的dom树</li>
+<li>否则，获取新旧节点的children(oldCh, ch)
+<ul>
+<li>如果oldCh &amp;&amp; ch, 那么进行updateChildren(elm, oldCh, ch)</li>
+<li>如果只有oldCh, 说明新的树结构应该抛弃oldCh(即所有子节点)</li>
+<li>如果只有ch, 说明新的树结构应该直接添加整个ch</li>
+</ul>
+</li>
+</ul>
+<p>那么就还剩下一个最重要的问题，diff算法中核心的同层级节点比较，也就是updateChildren方法。该方法简要可以概括为: 为oldCh和newCh分别定义头部和尾部的游标索引, 在比较过程中，游标索引逐步移动，尽可能的寻找sameVnode，直到碰撞，整个updateChildren的过程也就结束了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> oldStartIdx = <span class="number">0</span> <span class="comment">// oldCh头部索引</span></span><br><span class="line"><span class="keyword">let</span> newStartIdx = <span class="number">0</span> <span class="comment">// ch头部索引</span></span><br><span class="line"><span class="keyword">let</span> oldEndIdx = oldCh.length - <span class="number">1</span> <span class="comment">// oldCh尾部索引</span></span><br><span class="line"><span class="keyword">let</span> newEndIdx = newCh.length - <span class="number">1</span> <span class="comment">// ch尾部索引</span></span><br></pre></td></tr></table></figure>
+<p>整个比较流程如下:</p>
+<ul>
+<li>while (oldStartIdx &lt;= oldEndIdx &amp;&amp; newStartIdx &lt;= newEndIdx)
+<ul>
+<li>若sameVnode(oldCh[oldStartIdx], newCh[newStartIdx])为true, 调用patchVnode，然后两个数组的头索引往后移动一位, 即++oldStartIdx, ++newStartIdx</li>
+<li>若sameVnode(oldCh[oldEndIdx], newCh[newEndIdx])为true, 调用patchVnode, 然后两个数组的头索引往前移动一位，即–oldEndIdx, --newEndIdx</li>
+<li>若sameVnode(oldCh[oldStartIdx], newCh[newEndIdx])为true, 调用patchVnode, 然后将oldCh[oldStartIdx]对应的dom直接插入到最后(复用dom), 然后++oldStartIdx, --newEndIdx</li>
+<li>若sameVnode(oldCh[oldEndIdx], newCh[newStartIdx])为true, 调用patchVnode, 然后将oldCh[oldEndIdx]对应的dom直接插入到最前面(复用dom), 然后–oldEndIdx, ++newStartIdx</li>
+<li>若以上都不满足, 针对newCh[newStartIdx]节点, 则要利用key属性(v-for)、sameVnode判断来尽量复用oldCh中的dom, 若无法复用则直接创建新的dom节点，最后++newStartIdx</li>
+</ul>
+</li>
+<li>while循环比较结束, 判断oldCh是否处理完毕
+<ul>
+<li>若oldStartIdx &gt; oldEndIdx (oldCh都处理了), 那么将newCh中newStartIdx到newEndIdx的vnode添加</li>
+<li>否则(newCh都处理好了), 那么将oldCh中oldStartIdx到oldEndIdx的vnode删除</li>
+</ul>
+</li>
+</ul>
+<p>源代码如下，已经添加注释:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">updateChildren</span> (<span class="params">parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly</span>) </span>&#123; <span class="comment">// 当父节点一样，那么更新子节点</span></span><br><span class="line">    <span class="keyword">let</span> oldStartIdx = <span class="number">0</span></span><br><span class="line">    <span class="keyword">let</span> newStartIdx = <span class="number">0</span></span><br><span class="line">    <span class="keyword">let</span> oldEndIdx = oldCh.length - <span class="number">1</span></span><br><span class="line">    <span class="keyword">let</span> oldStartVnode = oldCh[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">let</span> oldEndVnode = oldCh[oldEndIdx]</span><br><span class="line">    <span class="keyword">let</span> newEndIdx = newCh.length - <span class="number">1</span></span><br><span class="line">    <span class="keyword">let</span> newStartVnode = newCh[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">let</span> newEndVnode = newCh[newEndIdx]</span><br><span class="line">    <span class="keyword">let</span> oldKeyToIdx, idxInOld, vnodeToMove, refElm</span><br><span class="line"></span><br><span class="line">    <span class="comment">// removeOnly is a special flag used only by &lt;transition-group&gt;</span></span><br><span class="line">    <span class="comment">// to ensure removed elements stay in correct relative positions</span></span><br><span class="line">    <span class="comment">// during leaving transitions</span></span><br><span class="line">    <span class="keyword">const</span> canMove = !removeOnly</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (oldStartIdx &lt;= oldEndIdx &amp;&amp; newStartIdx &lt;= newEndIdx) &#123; <span class="comment">// 核心算法，同一个层级的vnode比较</span></span><br><span class="line">      <span class="keyword">if</span> (isUndef(oldStartVnode)) &#123;</span><br><span class="line">        oldStartVnode = oldCh[++oldStartIdx] <span class="comment">// Vnode has been moved left</span></span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isUndef(oldEndVnode)) &#123;</span><br><span class="line">        oldEndVnode = oldCh[--oldEndIdx]</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (sameVnode(oldStartVnode, newStartVnode)) &#123; <span class="comment">// start是同一个vnode</span></span><br><span class="line">        patchVnode(oldStartVnode, newStartVnode, insertedVnodeQueue)</span><br><span class="line">        oldStartVnode = oldCh[++oldStartIdx]</span><br><span class="line">        newStartVnode = newCh[++newStartIdx]</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (sameVnode(oldEndVnode, newEndVnode)) &#123; <span class="comment">// end是同一个vnode</span></span><br><span class="line">        patchVnode(oldEndVnode, newEndVnode, insertedVnodeQueue)</span><br><span class="line">        oldEndVnode = oldCh[--oldEndIdx]</span><br><span class="line">        newEndVnode = newCh[--newEndIdx]</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (sameVnode(oldStartVnode, newEndVnode)) &#123; <span class="comment">// Vnode moved right</span></span><br><span class="line">        patchVnode(oldStartVnode, newEndVnode, insertedVnodeQueue)</span><br><span class="line">        canMove &amp;&amp; nodeOps.insertBefore(parentElm, oldStartVnode.elm, nodeOps.nextSibling(oldEndVnode.elm)) <span class="comment">// 把start插入到最后, 另外为什么第三个参数不直接传null?</span></span><br><span class="line">        oldStartVnode = oldCh[++oldStartIdx]</span><br><span class="line">        newEndVnode = newCh[--newEndIdx]</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (sameVnode(oldEndVnode, newStartVnode)) &#123; <span class="comment">// Vnode moved left</span></span><br><span class="line">        patchVnode(oldEndVnode, newStartVnode, insertedVnodeQueue)</span><br><span class="line">        canMove &amp;&amp; nodeOps.insertBefore(parentElm, oldEndVnode.elm, oldStartVnode.elm) <span class="comment">// 把end插入到最前面</span></span><br><span class="line">        oldEndVnode = oldCh[--oldEndIdx]</span><br><span class="line">        newStartVnode = newCh[++newStartIdx]</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123; <span class="comment">// 最坏的情况， 需要利用定义的key或者逐个比较</span></span><br><span class="line">        <span class="keyword">if</span> (isUndef(oldKeyToIdx)) oldKeyToIdx = createKeyToOldIdx(oldCh, oldStartIdx, oldEndIdx) <span class="comment">// 做一个oldCh中key与索引的映射</span></span><br><span class="line">        idxInOld = isDef(newStartVnode.key)</span><br><span class="line">          ? oldKeyToIdx[newStartVnode.key] <span class="comment">// 有key就直接取出旧索引</span></span><br><span class="line">          : findIdxInOld(newStartVnode, oldCh, oldStartIdx, oldEndIdx) <span class="comment">// 再去遍历一次，用sameVnode方法判断newStartVnode在oldCh中的索引</span></span><br><span class="line">        <span class="keyword">if</span> (isUndef(idxInOld)) &#123; <span class="comment">// New element</span></span><br><span class="line">          createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          vnodeToMove = oldCh[idxInOld] <span class="comment">// 能找到，那么就移动吧</span></span><br><span class="line">          <span class="comment">/* istanbul ignore if */</span></span><br><span class="line">          <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span> &amp;&amp; !vnodeToMove) &#123; <span class="comment">// 若不存在, 应该就是key重复了</span></span><br><span class="line">            warn(</span><br><span class="line">              <span class="string">'It seems there are duplicate keys that is causing an update error. '</span> +</span><br><span class="line">              <span class="string">'Make sure each v-for item has a unique key.'</span></span><br><span class="line">            )</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">if</span> (sameVnode(vnodeToMove, newStartVnode)) &#123;  <span class="comment">// 一样</span></span><br><span class="line">            patchVnode(vnodeToMove, newStartVnode, insertedVnodeQueue)</span><br><span class="line">            oldCh[idxInOld] = <span class="literal">undefined</span> <span class="comment">// oldch已经用了</span></span><br><span class="line">            canMove &amp;&amp; nodeOps.insertBefore(parentElm, vnodeToMove.elm, oldStartVnode.elm)</span><br><span class="line">          &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// same key but different element. treat as new element</span></span><br><span class="line">            createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm)</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        newStartVnode = newCh[++newStartIdx] <span class="comment">// 位移一位</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (oldStartIdx &gt; oldEndIdx) &#123; <span class="comment">// 说明old vnodes处理完了</span></span><br><span class="line">      refElm = isUndef(newCh[newEndIdx + <span class="number">1</span>]) ? <span class="literal">null</span> : newCh[newEndIdx + <span class="number">1</span>].elm <span class="comment">// 若newEndIdx没变过, 那么新增的节点就放最后去, refElm为null</span></span><br><span class="line">      addVnodes(parentElm, refElm, newCh, newStartIdx, newEndIdx, insertedVnodeQueue)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (newStartIdx &gt; newEndIdx) &#123; <span class="comment">// 说明new vnodes先处理完了, 删除剩余没处理的old vnodes</span></span><br><span class="line">      removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>为了更形象一些，下面举个例子来表示同层级节点diff的过程(尽量覆盖各种比较情况)。首先是初始化状态如下图所示:</p>
+<img src="/2018/02/07/vue-mvvm/mvvm4.png" title="<span id=pic4>图4. 同层级diff算法(1)</a>">
+<p>oldStartIdx和newStartIdx的vnode节点可复用，如下图:</p>
+<img src="/2018/02/07/vue-mvvm/mvvm5.png" title="<span id=pic5>图5. 同层级diff算法(2)</a>">
+<p>oldStartIdx和newEndIdx的vnode节点可复用，如下图:</p>
+<img src="/2018/02/07/vue-mvvm/mvvm6.png" title="<span id=pic6>图6. 同层级diff算法(3)</a>">
+<p>oldEndIdx和newStartIdx的vnode节点可复用，如下图:</p>
+<img src="/2018/02/07/vue-mvvm/mvvm7.png" title="<span id=pic7>图7. 同层级diff算法(4)</a>">
+<p>现在头尾已经没有可复用的节点了，那么遍历当前oldStartIdx和oldEndIdx之间的节点，发现有个div的key和newStartIdx相同并且满足sameVnode，那么复用</p>
+<img src="/2018/02/07/vue-mvvm/mvvm8.png" title="<span id=pic8>图8. 同层级diff算法(5)</a>">
+<p>然后现在的newStartIdx对应的div虽然没有key，但是仍有一个符合sameVnode的节点复用</p>
+<img src="/2018/02/07/vue-mvvm/mvvm9.png" title="<span id=pic9>图9. 同层级diff算法(6)</a>">
+<p>最后, h2节点找不到可复用的节点，那么直接创建新的dom。此时，newEndIdx已经小于newStartIdx, 循环结束，将oldCh中没有复用的vnode对应的dom对象移除，整个同层级的diff过程就结束了</p>
+<img src="/2018/02/07/vue-mvvm/mvvm10.png" title="<span id=pic10>图10. 同层级diff算法(7)</a>">
+<p>到这里，整个diff过程就结束了。可以看出来，整个diff过程其实比较简单，并没有使用复杂的算法。</p>
+<h1>总结</h1>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/vue/" rel="tag"># vue</a>
+          
+            <a href="/tags/mvvm/" rel="tag"># mvvm</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/07/vue-intro/" rel="next" title="vue源代码学习-intro">
+                <i class="fa fa-chevron-left"></i> vue源代码学习-intro
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/04/05/机器学习-KNN/" rel="prev" title="机器学习-KNN">
+                机器学习-KNN <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+  
+  <div id="container" class = "post-block"></div>
+
+
+<script src="/lib/gitment/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  link: 'https://github.com/FatShen3/Blog/issues',
+  id: 'vue源代码学习-mvvm', // 可选。默认为 location.href, 这个会用作label，目前最长50个字符
+  owner: 'FatShen3',
+  repo: 'Blog',
+  oauth: {
+    client_id: 'df4cf8f5ace90705ef47',
+    client_secret: 'f3a7368660650339761f5b7b9b2a6040a7828490',
+  },
+})
+gitment.render('container')
+</script>
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars0.githubusercontent.com/u/25524169?s=460&v=4"
+                alt="Fat Shen" />
+            
+              <p class="site-author-name" itemprop="name">Fat Shen</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/FatShen3" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#observe-data"><span class="nav-number">1.</span> <span class="nav-text">observe data</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生成render函数"><span class="nav-number">2.</span> <span class="nav-text">生成render函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#new-watcher"><span class="nav-number">3.</span> <span class="nav-text">new watcher</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#diff算法"><span class="nav-number">4.</span> <span class="nav-text">diff算法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number"></span> <span class="nav-text">总结</span></a></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fat Shen</span>
+
+  
+</div>
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("2A6ElsKPeJw5b0mJv0kibH2p-gzGzoHsz", "nzFgQKhNwFT6c4CIityIE74C");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+  
+  
+
+  
+  
+
+  
+
+</body>
+</html>
