@@ -103,7 +103,7 @@
 <meta property="og:description" content="Vue router是Vue官方的路由管理器，帮助用户构建单页面应用。作为Vue生态系统的重要组成成员，还是值得了解一下的，下面就来看看它的内部实现吧。">
 <meta property="og:locale" content="zh-cn">
 <meta property="og:image" content="http://fatshen3.cn/2018/06/23/vue-router/1.png">
-<meta property="og:updated_time" content="2018-07-13T01:57:16.464Z">
+<meta property="og:updated_time" content="2018-07-18T02:07:45.197Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="vue源代码学习-vue-router">
 <meta name="twitter:description" content="Vue router是Vue官方的路由管理器，帮助用户构建单页面应用。作为Vue生态系统的重要组成成员，还是值得了解一下的，下面就来看看它的内部实现吧。">
@@ -411,7 +411,7 @@
 <ol start="4">
 <li>AbstractHistory</li>
 </ol>
-<p><code>abstract</code>模式，是用于非browser环境的，或者也可以用于nested router的场景。这种模式不会呈现路由对应的URL，也根本不会用到window.history对象，其内部自己维护了一个stack来储存访问的路由页面。</p>
+<p><code>abstract</code>模式，是用于非browser环境的(如ssr服务端)，或者也可以用于nested router的场景。这种模式不会呈现路由对应的URL，也根本不会用到window.history对象，其内部自己维护了一个stack来储存访问的路由页面。</p>
 <h2 id="路由匹配"><a class="header-anchor" href="#路由匹配"></a>路由匹配</h2>
 <p><code>vue-router</code>使用<a href="https://github.com/pillarjs/path-to-regexp" target="_blank" rel="noopener">path-to-regexp</a>来支持动态路由匹配。比如默认情况下:</p>
 <ul>
@@ -445,7 +445,7 @@
 <li>updated 要更新的视图组件</li>
 <li>actived 要新增的视图组件</li>
 </ul>
-<p>$注意，这些数组并不一定都有值$</p>
+<p><em>注意，这些数组并不一定都有值</em></p>
 <ol start="4">
 <li>将一系列钩子放入数组，等待顺序执行:</li>
 </ol>
